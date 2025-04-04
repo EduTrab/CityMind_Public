@@ -1,0 +1,43 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Streamlit cache
+.streamlit/config.toml
+.streamlit/cache/
+
+# Jupyter/Colab checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# App data folders (saved images, local datasets, etc.)
+data/saved_images/
+data/answered_images/
+data/saved_Local_images/
+static/images/
+dataset/
+
+# JSON outputs
+*.json
+
+# Don't track Python package markers
+__init__.py
+
+
+# Streamlit secrets (must never be committed)
+.streamlit/secrets.toml
