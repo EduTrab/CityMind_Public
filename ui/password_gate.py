@@ -10,10 +10,15 @@ def check_password():
     st.title("🔐 CityMind Access")
     pw = st.text_input("Enter password to continue:", type="password")
 
-    if pw and pw != st.secrets.get("app_password", ""):
-        st.error("❌ Incorrect password. Please try again.")
-    elif pw == st.secrets.get("app_password", ""):
+    # ✅ DEBUG PRINT
+    print("Entered:", pw)
+    print("Expected:", st.secrets.get("app_password"))
+
+    if pw and pw == st.secrets.get("app_password", ""):
         st.session_state.authenticated = True
         st.rerun()
+    elif pw:
+        st.error("❌ Incorrect password. Please try again.")
 
-    st.stop()  # Prevent loading rest of app
+    if not st.session_state.authenticated:
+        st.stop()

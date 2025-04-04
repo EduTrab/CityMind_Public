@@ -3,6 +3,7 @@ import streamlit as st
 
 
 # Google Maps API Key
+print("✅ [DEBUG] FULL st.secrets:", dict(st.secrets))
 MAPS_API_KEY = st.secrets.get("google_maps_api_key", "")
 print("✅ [DEBUG] MAPS_API_KEY loaded:", MAPS_API_KEY)  # <- ADD THIS
 

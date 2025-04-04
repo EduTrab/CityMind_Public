@@ -1,5 +1,6 @@
+import streamlit as st
 import requests
-from configs.config import MAPS_API_KEY
+
 
 def resolve_city_to_coordinates(city_name):
     if not city_name:
@@ -7,7 +8,7 @@ def resolve_city_to_coordinates(city_name):
     url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
         "address": city_name,
-        "key": MAPS_API_KEY
+        "key": st.secrets.get("google_maps_api_key", "")
     }
     response = requests.get(url, params=params)
     if response.status_code != 200:

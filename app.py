@@ -23,6 +23,9 @@ from llm.llm_service import MultiLLMService
 
 
 def main():
+    print("✅ [DEBUG] FULL secrets:", dict(st.secrets))
+    print("Expected:", st.secrets.get("app_password"))
+
     # pasword protection
     check_password()
 
@@ -59,6 +62,10 @@ def main():
         st.session_state.city_name = ""
     if st.session_state.previous_dataset_source != st.session_state.dataset_source:
         st.session_state.current_batch = []
+        st.session_state.prefetched_batch = []
+
+        # Force a refetch next time
+        st.session_state.feedback_reset_counter = 0
     
 
     st.session_state.previous_dataset_source = st.session_state.dataset_source

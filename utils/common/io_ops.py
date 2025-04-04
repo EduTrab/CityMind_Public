@@ -1,6 +1,8 @@
 import os
 import json
 import shutil
+import streamlit as st
+
 from configs.config import ANSWERED_DIR, SAVE_DIRS
 from utils.common.drive_upload import upload_file
 
@@ -47,6 +49,7 @@ def save_and_move_image(record):
 
     # ✅ Upload to Google Drive
     user_id = st.session_state.get("session_id", "unknown")
+    print(f"[DRIVE SAVE] Saving as user_id: {user_id}")
     try:
         upload_file(answered_image_path, os.path.basename(answered_image_path), user_id)
         upload_file(answered_json_path, os.path.basename(answered_json_path), user_id)

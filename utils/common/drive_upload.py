@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -8,8 +9,13 @@ from googleapiclient.http import MediaFileUpload
 DRIVE_ROOT_FOLDER_ID = st.secrets["gdrive"]["root_folder_id"]  # This should be your shared folder ID
 
 def get_drive_service():
+    # Reconstruct multiline private_key
+    service_info = dict(st.secrets["gdrive"])
+    service_info["private_key"] = service_info["private_key"].replace("\\n", "\n")
+
+    # Create credentials object
     creds = service_account.Credentials.from_service_account_info(
-        st.secrets["gdrive"],
+        service_info,
         scopes=["https://www.googleapis.com/auth/drive"]
     )
     return build("drive", "v3", credentials=creds)
@@ -30,17 +36,27 @@ def ensure_drive_folder(service, folder_name, parent_id):
     return folder['id']
 
 def upload_file(local_path, remote_name, user_id):
-    """Uploads file to a per-user subfolder in Google Drive"""
-    service = get_drive_service()
-    user_folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
+    try:
+        service = get_drive_service()
 
-    file_metadata = {
-        "name": remote_name,
-        "parents": [user_folder_id]
-    }
-    media = MediaFileUpload(local_path, resumable=True)
-    service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields="id"
-    ).execute()
+        print(f"[DRIVE UPLOAD] Getting or creating user folder for: user_{user_id}")
+        user_folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
+        print(f"[DRIVE UPLOAD] Using folder ID: {user_folder_id}")
+
+        file_metadata = {
+            "name": remote_name,
+            "parents": [user_folder_id]
+        }
+
+        media = MediaFileUpload(local_path, resumable=True)
+        file = service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields="id"
+        ).execute()
+
+        print(f"✅ [DRIVE UPLOAD] File uploaded: {remote_name} (ID: {file['id']})")
+
+    except Exception as e:
+        print(f"❌ [DRIVE UPLOAD] FAILED to upload {remote_name}: {e}")
+

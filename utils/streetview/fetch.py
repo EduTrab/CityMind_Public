@@ -1,7 +1,9 @@
 import os
 import json
 import time
-from configs.config import SAVE_DIR, ANSWERED_DIR, MAPS_API_KEY
+import streamlit as st
+
+from configs.config import SAVE_DIR, ANSWERED_DIR
 from data.cities_coordinates import city_coordinates
 from streetview import search_panoramas, get_panorama_meta, get_streetview
 from utils.common.index_utils import random_location
@@ -22,12 +24,13 @@ def download_image(pano_id, idx):
     Returns:
         tuple: (image_path, json_path)
     """
+    print("[DEBUG] Using API KEY inside fetch:", st.secrets.get("google_maps_api_key"))
     try:
-        image = get_streetview(pano_id=pano_id, api_key=MAPS_API_KEY)
+        image = get_streetview(pano_id=pano_id, api_key=st.secrets.get("google_maps_api_key", ""))
         image_path = os.path.join(SAVE_DIR, f"{idx}.png")
         image.save(image_path, "png")
 
-        meta = get_panorama_meta(pano_id=pano_id, api_key=MAPS_API_KEY)
+        meta = get_panorama_meta(pano_id=pano_id, api_key=st.secrets.get("google_maps_api_key", ""))
         meta_data = {
             "pano_id": pano_id,
             "location": {"lat": meta.location.lat, "lng": meta.location.lng},
@@ -40,6 +43,8 @@ def download_image(pano_id, idx):
     except Exception as e:
         print(f"Error downloading image or metadata for pano_id {pano_id}: {e}")
         return None, None
+    
+
 
 
 
