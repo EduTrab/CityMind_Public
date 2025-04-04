@@ -7,3 +7,5 @@ pydrive2
 Pillow
 requests
 streetview
+torch
+
