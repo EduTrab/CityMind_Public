@@ -12,3 +12,4 @@ requests==2.32.3
 transformers==4.48.2
 streetview
 ollama==0.4.7
+google-generativeai
