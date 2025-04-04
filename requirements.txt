@@ -6,3 +6,4 @@ google-auth-oauthlib
 pydrive2
 Pillow
 requests
+streetview
