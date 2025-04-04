@@ -1,9 +1,12 @@
 import os
 import streamlit as st
 import json
+
+from concurrent.futures import ThreadPoolExecutor
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from threading import Thread
 
 # Optional: Store the root folder in your Drive where all CityMind data will go
 DRIVE_ROOT_FOLDER_ID = st.secrets["gdrive"]["root_folder_id"]  # This should be your shared folder ID
@@ -60,3 +63,25 @@ def upload_file(local_path, remote_name, user_id):
     except Exception as e:
         print(f"❌ [DRIVE UPLOAD] FAILED to upload {remote_name}: {e}")
 
+
+
+drive_pool = ThreadPoolExecutor(max_workers=5)
+
+def async_upload_record(record, user_id):
+    """
+    Uploads a single record (image + json) to Drive in a background thread.
+    Also shows a subtle toast notification on success/failure.
+    """
+    def _upload():
+        try:
+            upload_file(record["image_path"], os.path.basename(record["image_path"]), user_id)
+            upload_file(record["json_path"], os.path.basename(record["json_path"]), user_id)
+
+            # ✅ Subtle notification (non-intrusive)
+            st.toast(f"✅ Uploaded {os.path.basename(record['image_path'])}", icon="📤")
+
+        except Exception as e:
+            print(f"❌ [Drive Upload] Failed for {record['image_path']}: {e}")
+            st.toast(f"⚠️ Failed to upload {os.path.basename(record['image_path'])}", icon="⚠️")
+
+    Thread(target=_upload, daemon=True).start()
