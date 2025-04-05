@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import json
 
+from threading import Lock
 from concurrent.futures import ThreadPoolExecutor
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -66,22 +67,37 @@ def upload_file(local_path, remote_name, user_id):
 
 
 drive_pool = ThreadPoolExecutor(max_workers=5)
+upload_lock = Lock()
 
 def async_upload_record(record, user_id):
     """
-    Uploads a single record (image + json) to Drive in a background thread.
-    Also shows a subtle toast notification on success/failure.
+    Uploads both image and JSON as a single atomic task in a thread pool.
+    Ensures both files are uploaded together with logging.
     """
-    def _upload():
+    def upload_task():
         try:
-            upload_file(record["image_path"], os.path.basename(record["image_path"]), user_id)
-            upload_file(record["json_path"], os.path.basename(record["json_path"]), user_id)
+            with upload_lock:
+                service = get_drive_service()
+                folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
 
-            # ✅ Subtle notification (non-intrusive)
-            st.toast(f"✅ Uploaded {os.path.basename(record['image_path'])}", icon="📤")
+            for local_path in [record["image_path"], record["json_path"]]:
+                remote_name = os.path.basename(local_path)
+                file_metadata = {
+                    "name": remote_name,
+                    "parents": [folder_id]
+                }
+                media = MediaFileUpload(local_path, resumable=True)
+                service.files().create(
+                    body=file_metadata,
+                    media_body=media,
+                    fields="id"
+                ).execute()
+                print(f"✅ [DRIVE UPLOAD] File uploaded: {remote_name}")
+            
+            st.toast(f"📤 Uploaded {os.path.basename(record['image_path'])} + JSON")
 
         except Exception as e:
-            print(f"❌ [Drive Upload] Failed for {record['image_path']}: {e}")
-            st.toast(f"⚠️ Failed to upload {os.path.basename(record['image_path'])}", icon="⚠️")
+            print(f"❌ [UPLOAD FAIL] Failed for {record['image_path']}: {e}")
+            st.toast(f"⚠️ Upload failed: {os.path.basename(record['image_path'])}", icon="⚠️")
 
-    Thread(target=_upload, daemon=True).start()
+    drive_pool.submit(upload_task)

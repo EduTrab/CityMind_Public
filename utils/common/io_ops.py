@@ -4,7 +4,7 @@ import shutil
 import streamlit as st
 
 from configs.config import ANSWERED_DIR, SAVE_DIRS
-from utils.common.drive_upload import upload_file
+from utils.common.drive_upload import async_upload_record
 
 
 def save_and_move_image(record):
