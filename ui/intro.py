@@ -9,6 +9,7 @@ def render_intro():
         2. Select a dataset source:
            - **Default Dataset**: Downloads images from Street View.
            - **Local Dataset**: Upload your own images.
+           - **City Dataset**: Choose what City to analyse.
         3. Click **LLM closed Q&A** to process images.
         4. Review (and optionally refine) the generated MCQs, then click **Submit All Answers**.
         """
