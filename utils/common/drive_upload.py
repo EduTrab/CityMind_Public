@@ -66,22 +66,28 @@ def upload_file(local_path, remote_name, user_id):
 
 
 
-drive_pool = ThreadPoolExecutor(max_workers=5)
-upload_lock = Lock()
+# Global folder cache to prevent redundant creation per user
+user_folder_cache = {}
+folder_cache_lock = Lock()
 
 def async_upload_record(record, user_id):
     """
-    Uploads both image and JSON as a single atomic task in a thread pool.
-    Ensures both files are uploaded together with logging.
+    Uploads both image and JSON to Drive in a single atomic thread pool task.
+    Uses a thread-safe per-user folder cache to prevent duplicate folder creation.
     """
     def upload_task():
         try:
-            with upload_lock:
-                service = get_drive_service()
-                if not st.session_state.get("user_folder_id"):
-                    st.session_state.user_folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
-                folder_id = st.session_state.user_folder_id
+            # Reuse cached folder ID if available
+            with folder_cache_lock:
+                if user_id in user_folder_cache:
+                    folder_id = user_folder_cache[user_id]
+                else:
+                    service = get_drive_service()
+                    folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
+                    user_folder_cache[user_id] = folder_id
 
+            # Proceed to upload both files
+            service = get_drive_service()
             for local_path in [record["image_path"], record["json_path"]]:
                 remote_name = os.path.basename(local_path)
                 file_metadata = {
@@ -95,7 +101,7 @@ def async_upload_record(record, user_id):
                     fields="id"
                 ).execute()
                 print(f"✅ [DRIVE UPLOAD] File uploaded: {remote_name}")
-            
+
             st.toast(f"📤 Uploaded {os.path.basename(record['image_path'])} + JSON")
 
         except Exception as e:
