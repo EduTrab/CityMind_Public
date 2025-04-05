@@ -69,6 +69,8 @@ def upload_file(local_path, remote_name, user_id):
 # Global folder cache to prevent redundant creation per user
 user_folder_cache = {}
 folder_cache_lock = Lock()
+drive_pool = ThreadPoolExecutor(max_workers=5)
+
 
 def async_upload_record(record, user_id):
     """
