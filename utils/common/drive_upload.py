@@ -78,7 +78,9 @@ def async_upload_record(record, user_id):
         try:
             with upload_lock:
                 service = get_drive_service()
-                folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
+                if not st.session_state.get("user_folder_id"):
+                    st.session_state.user_folder_id = ensure_drive_folder(service, f"user_{user_id}", DRIVE_ROOT_FOLDER_ID)
+                folder_id = st.session_state.user_folder_id
 
             for local_path in [record["image_path"], record["json_path"]]:
                 remote_name = os.path.basename(local_path)

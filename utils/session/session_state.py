@@ -19,3 +19,5 @@ def initialize_session_state():
         st.session_state.previous_dataset_source = st.session_state.get("dataset_source", "Default Dataset")
     if "gemini_api_key" not in st.session_state:
         st.session_state.gemini_api_key = st.secrets.get("google_gemini_api_key", "")
+    if "user_folder_id" not in st.session_state:
+        st.session_state.user_folder_id = None      
