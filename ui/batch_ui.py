@@ -12,6 +12,8 @@ def render_batch_interface(llm_server):
         st.session_state.upload_notice = "🚀 Your answers are being saved and uploaded in the background."
     if "is_prefetching" not in st.session_state:
         st.session_state.is_prefetching = False
+    if "prefetch_triggered" not in st.session_state:
+        st.session_state.prefetch_triggered = False
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
@@ -24,13 +26,15 @@ def render_batch_interface(llm_server):
         st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server=llm_server)
         st.session_state.is_prefetching = False
 
-    # Only prefetch if NOT in Local Dataset mode
+    # Trigger prefetch exactly once per batch (prevents answer selection reruns from triggering it)
     if (
         st.session_state.dataset_source != "Local Dataset"
         and not st.session_state.prefetched_batch
         and not st.session_state.is_prefetching
+        and not st.session_state.prefetch_triggered
     ):
-        st.markdown("🔄 Downloading next batch... Submition possible in a few seconds ⏳")
+        st.markdown("🔄 Downloading next batch... Submission possible in a few seconds ⏳")
+        st.session_state.prefetch_triggered = True
         trigger_prefetch()
 
     submit_disabled = st.session_state.get("is_prefetching", False)
@@ -48,4 +52,5 @@ def render_batch_interface(llm_server):
         with st.spinner("Processing submissions..."):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
+            st.session_state.prefetch_triggered = False  # 🔁 Reset prefetch flag after submit
             st.rerun()
