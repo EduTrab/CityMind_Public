@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+import streamlit.components.v1 as components
 from PIL import Image
 from llm.mcqa_generator import download_new_batch_llm_mcqa
 from utils.common.io_ops import save_and_move_image
@@ -20,7 +21,8 @@ def render_batch_interface(llm_server):
         for i, record in enumerate(st.session_state.current_batch):
             render_question_card(record, i)
             render_feedback_block(record, i)
-        st.form_submit_button("Answers saved", disabled=True)
+        components.html("<div style='display:none'><button type='submit'>Ignore</button></div>", height=0)
+
 
     # Trigger background prefetch silently (⚠️ NO user-visible logs)
     def silent_prefetch():
