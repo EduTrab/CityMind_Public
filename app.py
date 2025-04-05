@@ -6,7 +6,7 @@ from ui.intro import render_intro
 from ui.sidebar import render_sidebar_controls
 from ui.batch_ui import render_batch_interface
 from ui.password_gate import check_password
-from ui.tutorial import render_tutorial_page  # ✅ Add this line
+from ui.tutorial import render_tutorial
 
 # Session state
 from utils.session.session_state import initialize_session_state
@@ -32,7 +32,7 @@ def main():
 
     # ✅ Tutorial mode
     if st.session_state.active_page == "Tutorial":
-        render_tutorial_page()
+        render_tutorial()
         return
 
     # 🌍 City mode coordinate resolution
