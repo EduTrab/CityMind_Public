@@ -15,30 +15,12 @@ def render_batch_interface(llm_server):
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
-    # Prefetch trigger after rendering form
+    # ⚠️ Prefetch logic before rendering anything
     def trigger_prefetch():
         st.session_state.is_prefetching = True
         st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server=llm_server)
         st.session_state.is_prefetching = False
 
-    # Wrap everything inside a form to avoid reruns on input
-    with st.form(key="batch_form"):
-        for i, record in enumerate(st.session_state.current_batch):
-            render_question_card(record, i)
-            render_feedback_block(record, i)
-
-        # Prefetch status and submit UI
-        submit_disabled = st.session_state.get("is_prefetching", False)
-        submit_label = "Submit All Answers" if not submit_disabled else "⏳ Prefetching next batch..."
-        submit_help = None if not submit_disabled else "You can submit once prefetching completes."
-
-        submitted = st.form_submit_button(
-            label=submit_label,
-            disabled=submit_disabled,
-            help=submit_help
-        )
-
-    # Trigger prefetch only once, after form is rendered
     if (
         st.session_state.dataset_source != "Local Dataset"
         and not st.session_state.prefetched_batch
@@ -47,8 +29,22 @@ def render_batch_interface(llm_server):
         st.markdown("🔄 Downloading next batch... Submission possible in a few seconds ⏳")
         trigger_prefetch()
 
-    # Handle final submit
-    if submitted and not submit_disabled:
+    # ✅ Wrap radio inputs and feedback inside form to avoid reruns
+    with st.form("batch_form"):
+        for i, record in enumerate(st.session_state.current_batch):
+            render_question_card(record, i)
+            render_feedback_block(record, i)
+
+        # 👇 Dummy submit to store values but not submit batch
+        st.form_submit_button("Update answers (no-op)", disabled=True)
+
+    # ✅ Show real Submit button OUTSIDE the form
+    submit_disabled = st.session_state.get("is_prefetching", False)
+    submit_label = "Submit All Answers" if not submit_disabled else "⏳ Prefetching next batch..."
+    submit_help = None if not submit_disabled else "Please wait — next batch is still being downloaded."
+
+    # 👇 True submit trigger
+    if st.button(label=submit_label, disabled=submit_disabled, help=submit_help):
         with st.spinner("Processing submissions..."):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
