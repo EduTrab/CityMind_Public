@@ -28,12 +28,17 @@ def render_question_card(record, i):
         # Pre-select the user's previous choice, or fall back to first option
         user_choice = record.get("user_choice") or answer_choices[0]
 
-        chosen = st.radio(
-            label=f"Select answer (image {i+1})",
-            options=displayed,
-            index=answer_choices.index(user_choice) if user_choice in answer_choices else 0,
-            key=f"llm_mcqa_radio_{i}"
-        )
+        radio_key = f"llm_mcqa_radio_{i}"
+        with st.container():
+            st.markdown(f"<label for='{radio_key}'>Select answer (image {i+1}):</label>", unsafe_allow_html=True)
+            chosen = st.radio(
+                label="",
+                options=displayed,
+                index=answer_choices.index(user_choice) if user_choice in answer_choices else 0,
+                key=radio_key
+            )
+        record["user_choice"] = chosen.split(")", 1)[0].strip()
+
 
         # ✅ DO NOT write to record["user_choice"] here!
         # It will be written later on submit in process_submission_batch()
@@ -74,6 +79,7 @@ def process_submission_batch(records, llm_server):
         else:
             record["user_choice"] = "?"  # fallback
         print(f"[📝 SUBMIT] Saved answer for Q{i}: {record['user_choice']}")
+        print(f"🧠 Final user_choice = {record['user_choice']} for image: {record['image_path']}")
         save_and_move_image(record)
 
     # ✅ Process refined questions (feedback present)
