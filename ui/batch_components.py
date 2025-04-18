@@ -23,9 +23,9 @@ def render_question_card(record, i):
 
         st.markdown(f"**MC Question (image #{i+1})**:\n\n{question_text}")
         answer_choices = list(options.keys()) + ["Not Relevant"]
-        displayed = [
-            f"{letter}) {options.get(letter, '')}" for letter in answer_choices
-        ]
+        displayed = [f"{letter}) {options.get(letter, '')}" for letter in answer_choices]
+        
+        # Pre-select the user's previous choice, or fall back to first option
         user_choice = record.get("user_choice") or answer_choices[0]
 
         chosen = st.radio(
@@ -34,7 +34,9 @@ def render_question_card(record, i):
             index=answer_choices.index(user_choice) if user_choice in answer_choices else 0,
             key=f"llm_mcqa_radio_{i}"
         )
-        record["user_choice"] = chosen.split(")", 1)[0].strip()
+
+        # ✅ DO NOT write to record["user_choice"] here!
+        # It will be written later on submit in process_submission_batch()
 
         with st.expander("View LLM Responds"):
             st.write(f"**LLM's Reason:** {reason_text}")
@@ -52,9 +54,9 @@ def render_feedback_block(record, i):
 
 
 def get_corresponding_lightweight_models(model): 
-    if model=="gemini-reasoning":
+    if model == "gemini-reasoning":
         return "gemini-1.5-flash-002"
-    raise F"THE GIVEN MODEL {model} is not supported. ADD IT"
+    raise ValueError(f"❌ THE GIVEN MODEL '{model}' is not supported. Add a mapping in get_corresponding_lightweight_models().")
 
 def process_submission_batch(records, llm_server):
     current_model = st.session_state.selected_model
@@ -63,21 +65,27 @@ def process_submission_batch(records, llm_server):
     records_no_feedback = [r for r in records if not r.get("feedback", "").strip()]
     records_with_feedback = [r for r in records if r.get("feedback", "").strip()]
 
-    # ✅ Collect user answers again before saving
+    # ✅ Collect user answers from widget state just before saving
     for i, record in enumerate(records_no_feedback):
         key = f"llm_mcqa_radio_{i}"
         selected_raw = st.session_state.get(key)
         if selected_raw:
             record["user_choice"] = selected_raw.split(")", 1)[0].strip()
+        else:
+            record["user_choice"] = "?"  # fallback
+        print(f"[📝 SUBMIT] Saved answer for Q{i}: {record['user_choice']}")
         save_and_move_image(record)
 
-    # ✅ Now process refinements (those with feedback)
+    # ✅ Process refined questions (feedback present)
     updated_records = []
     for i, record in enumerate(records_with_feedback):
         key = f"llm_mcqa_radio_{i}"
         selected_raw = st.session_state.get(key)
         if selected_raw:
             record["user_choice"] = selected_raw.split(")", 1)[0].strip()
+        else:
+            record["user_choice"] = "?"
+        print(f"[🛠️ REFINE] User answer for Q{i}: {record['user_choice']} + feedback: {record['feedback']}")
 
         refined, warning = iterative_refinement(record, llm_server, lightweight_model, max_iterations=2)
         record.update({
@@ -90,4 +98,5 @@ def process_submission_batch(records, llm_server):
         })
         updated_records.append(record)
 
+    # Save updated records into session
     st.session_state.current_batch = updated_records
