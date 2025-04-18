@@ -58,17 +58,27 @@ def get_corresponding_lightweight_models(model):
 
 def process_submission_batch(records, llm_server):
     current_model = st.session_state.selected_model
-    lightweight_model=get_corresponding_lightweight_models(current_model)
-
+    lightweight_model = get_corresponding_lightweight_models(current_model)
 
     records_no_feedback = [r for r in records if not r.get("feedback", "").strip()]
     records_with_feedback = [r for r in records if r.get("feedback", "").strip()]
 
-    for record in records_no_feedback:
+    # ✅ Collect user answers again before saving
+    for i, record in enumerate(records_no_feedback):
+        key = f"llm_mcqa_radio_{i}"
+        selected_raw = st.session_state.get(key)
+        if selected_raw:
+            record["user_choice"] = selected_raw.split(")", 1)[0].strip()
         save_and_move_image(record)
 
+    # ✅ Now process refinements (those with feedback)
     updated_records = []
-    for record in records_with_feedback:
+    for i, record in enumerate(records_with_feedback):
+        key = f"llm_mcqa_radio_{i}"
+        selected_raw = st.session_state.get(key)
+        if selected_raw:
+            record["user_choice"] = selected_raw.split(")", 1)[0].strip()
+
         refined, warning = iterative_refinement(record, llm_server, lightweight_model, max_iterations=2)
         record.update({
             "mc_question": refined.get("mc_question", record["mc_question"]),
