@@ -83,7 +83,7 @@ def process_submission_batch(records, llm_server):
     # ✅ Process refined questions (feedback present)
     updated_records = []
     # ✅ Collect user answers from widget state just before saving
-    for i, record in enumerate(records_no_feedback):F
+    for i, record in enumerate(records_no_feedback):
         key = f"llm_mcqa_radio_{i}"
         selected_raw = st.session_state.get(key)
 
