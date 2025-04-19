@@ -1,12 +1,10 @@
 # ui/batch_ui.py
-import os
 import streamlit as st
 from llm.mcqa_generator import download_new_batch_llm_mcqa
 from ui.batch_components import render_question_card, render_feedback_block, process_submission_batch
 
 def render_batch_interface(llm_server):
-    # ————————————————————————————————————————————————————————————————————————————————————
-    # 1) Make sure we have our flags in session_state
+    # 1) One‑time defaults
     if "upload_notice" not in st.session_state:
         st.session_state.upload_notice = "🚀 Your answers are being saved and uploaded in the background."
     if "is_prefetching" not in st.session_state:
@@ -14,28 +12,21 @@ def render_batch_interface(llm_server):
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
-    # ————————————————————————————————————————————————————————————————————————————————————
-    # 2) Silent prefetch helper
+    # 2) Helper to fetch in background
     def silent_prefetch():
         st.session_state.is_prefetching = True
-        st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server=llm_server)
+        st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server)
         st.session_state.is_prefetching = False
 
-    # 3) Trigger exactly-once background prefetch if:
-    #    • We're not on Local Dataset
-    #    • There's a current batch in play
-    #    • We haven't already prefetched
-    #    • And we're not already mid‑prefetch
+    # 3) Run one silent prefetch *before* showing the form
     if (
         st.session_state.dataset_source != "Local Dataset"
-        and st.session_state.current_batch
         and not st.session_state.prefetched_batch
         and not st.session_state.is_prefetching
     ):
         silent_prefetch()
 
-    # ————————————————————————————————————————————————————————————————————————————————————
-    # 4) All questions + feedback inside one form, with its own active submit button
+    # 4) All your questions + feedback + the **only** submit button
     with st.form("batch_form"):
         for i, record in enumerate(st.session_state.current_batch):
             render_question_card(record, i)
@@ -50,26 +41,23 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # ————————————————————————————————————————————————————————————————————————————————————
-    # 5) When they hit that form’s submit:
+    # 5) When they click inside-the-form “Submit All Answers”:
     if submit:
-        # a) Process + save/refine
+        # a) Process & save/refine everything
         with st.spinner("Processing submissions…"):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
 
-        # b) Swap in the batch we prefetched earlier (or fall back to live download)
+        # b) Swap in the batch we already prefetched (or download live)
         if st.session_state.prefetched_batch:
             st.session_state.current_batch = st.session_state.prefetched_batch
             st.session_state.prefetched_batch = []
         else:
-            st.session_state.current_batch = download_new_batch_llm_mcqa(
-                llm_server=llm_server
-            )
+            st.session_state.current_batch = download_new_batch_llm_mcqa(llm_server)
 
-        # c) Immediately fire off the next background prefetch
+        # c) Kick off the next background fetch
         if st.session_state.dataset_source != "Local Dataset":
             silent_prefetch()
 
-        # d) Rerun so the UI shows the new questions
+        # d) Finally, rerun so the UI immediately shows the new batch
         st.experimental_rerun()
