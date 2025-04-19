@@ -23,23 +23,18 @@ def render_question_card(record, i):
 
         st.markdown(f"**MC Question (image #{i+1})**:\n\n{question_text}")
         answer_choices = list(options.keys()) + ["Not Relevant"]
-        displayed = [f"{letter}) {options.get(letter, '')}" for letter in answer_choices]
-        
-        # Pre-select the user's previous choice, or fall back to first option
+        displayed = [
+            f"{letter}) {options.get(letter, '')}" for letter in answer_choices
+        ]
         user_choice = record.get("user_choice") or answer_choices[0]
 
-        radio_key = f"llm_mcqa_radio_{i}"
-        with st.container():
-            st.markdown(f"<label for='{radio_key}'>Select answer (image {i+1}):</label>", unsafe_allow_html=True)
-            chosen = st.radio(
-                label="",
-                options=displayed,
-                index=answer_choices.index(user_choice) if user_choice in answer_choices else 0,
-                key=radio_key
-            )
-
+        chosen = st.radio(
+            label=f"Select answer (image {i+1})",
+            options=displayed,
+            index=answer_choices.index(user_choice) if user_choice in answer_choices else 0,
+            key=f"llm_mcqa_radio_{i}"
+        )
         record["user_choice"] = chosen.split(")", 1)[0].strip()
-        print(f"[UI] User selected for Q{i}: {record['user_choice']} (key={radio_key})")
 
         with st.expander("View LLM Responds"):
             st.write(f"**LLM's Reason:** {reason_text}")
@@ -63,46 +58,26 @@ def get_corresponding_lightweight_models(model):
 
 def process_submission_batch(records, llm_server):
     current_model = st.session_state.selected_model
-    lightweight_model = get_corresponding_lightweight_models(current_model)
+    lightweight_model=get_corresponding_lightweight_models(current_model)
+
 
     records_no_feedback = [r for r in records if not r.get("feedback", "").strip()]
     records_with_feedback = [r for r in records if r.get("feedback", "").strip()]
 
-    # ✅ Collect user answers from widget state just before saving
-    for i, record in enumerate(records_no_feedback):
-        key = f"llm_mcqa_radio_{i}"
-        selected_raw = st.session_state.get(key)
-        if selected_raw:
-            record["user_choice"] = selected_raw.split(")", 1)[0].strip()
-        else:
-            record["user_choice"] = "?"  # fallback
-
-        st.write(f"📥 [NO FEEDBACK] Q{i} | `{os.path.basename(record['image_path'])}` | user_choice = `{record['user_choice']}`")
+    for record in records_no_feedback:
         save_and_move_image(record)
 
-    # ✅ Process refined questions (feedback present)
     updated_records = []
-    # ✅ Collect user answers from widget state just before saving
-    for i, record in enumerate(records_no_feedback):
-        key = f"llm_mcqa_radio_{i}"
-        selected_raw = st.session_state.get(key)
+    for record in records_with_feedback:
+        refined, warning = iterative_refinement(record, llm_server, lightweight_model, max_iterations=2)
+        record.update({
+            "mc_question": refined.get("mc_question", record["mc_question"]),
+            "mc_options": refined.get("mc_options", record["mc_options"]),
+            "mc_correct": refined.get("mc_correct", record["mc_correct"]),
+            "mc_reason": refined.get("mc_reason", record["mc_reason"]),
+            "warning": warning,
+            "feedback": ""
+        })
+        updated_records.append(record)
 
-        # ⛳️ DEBUG PRINTS
-        st.write("----")
-        st.write(f"🔑 Widget key: {key}")
-        st.write(f"📥 Widget raw value: {selected_raw}")
-        st.write(f"🖼️  Image path: {record.get('image_path')}")
-        st.write(f"📋  MCQ: {record.get('mc_question', '')[:40]}...")
-
-        if selected_raw:
-            record["user_choice"] = selected_raw.split(")", 1)[0].strip()
-        else:
-            record["user_choice"] = "?"
-
-        st.write(f"✅ Final choice: {record['user_choice']}")
-
-        save_and_move_image(record)
-
-
-    # Save updated records into session
     st.session_state.current_batch = updated_records
