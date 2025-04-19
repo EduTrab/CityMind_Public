@@ -8,10 +8,6 @@ from utils.common.drive_upload import async_upload_record
 
 
 def save_and_move_image(record):
-    """
-    Saves answers to JSON, moves image + JSON to ANSWERED_DIR, and cleans up.
-    Drive upload is now handled asynchronously.
-    """
     from utils.common.drive_upload import async_upload_record
 
     image_path = record["image_path"]
@@ -24,6 +20,7 @@ def save_and_move_image(record):
     # Load & update JSON
     with open(json_path, 'r') as f:
         data = json.load(f)
+
     data.update({
         "mc_question": record.get("mc_question", ""),
         "mc_options": record.get("mc_options", {}),
@@ -32,6 +29,10 @@ def save_and_move_image(record):
         "user_choice": record.get("user_choice", None),
         "question_mode": "llm_mcqa"
     })
+
+    print(f"[SAVE] Writing updated JSON for image: {os.path.basename(image_path)}")
+    print(f"        → user_choice: {data.get('user_choice')}")
+
     answered_json = os.path.join(ANSWERED_DIR, os.path.basename(json_path))
     with open(answered_json, 'w') as f:
         json.dump(data, f, indent=4)
