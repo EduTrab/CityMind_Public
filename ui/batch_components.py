@@ -68,27 +68,29 @@ def process_submission_batch(records, llm_server):
     records_no_feedback = [r for r in records if not r.get("feedback", "").strip()]
     records_with_feedback = [r for r in records if r.get("feedback", "").strip()]
 
+    # ✅ Collect user answers from widget state just before saving
     for i, record in enumerate(records_no_feedback):
         key = f"llm_mcqa_radio_{i}"
         selected_raw = st.session_state.get(key)
-        print(f"[SUBMIT] Retrieved from st.session_state[{key}] → {selected_raw}")
         if selected_raw:
             record["user_choice"] = selected_raw.split(")", 1)[0].strip()
         else:
-            record["user_choice"] = "?"
-        print(f"[SUBMIT] Final saved user_choice for Q{i}: {record['user_choice']}")
+            record["user_choice"] = "?"  # fallback
+
+        st.write(f"📥 [NO FEEDBACK] Q{i} | `{os.path.basename(record['image_path'])}` | user_choice = `{record['user_choice']}`")
         save_and_move_image(record)
 
+    # ✅ Process refined questions (feedback present)
     updated_records = []
     for i, record in enumerate(records_with_feedback):
         key = f"llm_mcqa_radio_{i}"
         selected_raw = st.session_state.get(key)
-        print(f"[REFINE] Retrieved from st.session_state[{key}] → {selected_raw}")
         if selected_raw:
             record["user_choice"] = selected_raw.split(")", 1)[0].strip()
         else:
             record["user_choice"] = "?"
-        print(f"[REFINE] User answer for Q{i}: {record['user_choice']} + feedback: {record['feedback']}")
+
+        st.write(f"🛠️ [WITH FEEDBACK] Q{i} | `{os.path.basename(record['image_path'])}` | user_choice = `{record['user_choice']}` | feedback: `{record['feedback']}`")
 
         refined, warning = iterative_refinement(record, llm_server, lightweight_model, max_iterations=2)
         record.update({
@@ -101,4 +103,5 @@ def process_submission_batch(records, llm_server):
         })
         updated_records.append(record)
 
+    # Save updated records into session
     st.session_state.current_batch = updated_records

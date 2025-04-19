@@ -14,10 +14,10 @@ def save_and_move_image(record):
     json_path = record["json_path"]
 
     if not os.path.exists(image_path) or not os.path.exists(json_path):
-        print(f"[Warning] Missing image or json: {image_path}, {json_path}")
+        st.warning(f"⚠️ Missing image or json: {image_path}, {json_path}")
         return
 
-    # Load & update JSON
+    # Load existing JSON
     with open(json_path, 'r') as f:
         data = json.load(f)
 
@@ -30,8 +30,8 @@ def save_and_move_image(record):
         "question_mode": "llm_mcqa"
     })
 
-    print(f"[SAVE] Writing updated JSON for image: {os.path.basename(image_path)}")
-    print(f"        → user_choice: {data.get('user_choice')}")
+    # ✅ Debug: Confirm what we're saving
+    st.write(f"💾 Saving JSON for `{os.path.basename(json_path)}` with `user_choice`: `{data.get('user_choice')}`")
 
     answered_json = os.path.join(ANSWERED_DIR, os.path.basename(json_path))
     with open(answered_json, 'w') as f:
@@ -41,16 +41,16 @@ def save_and_move_image(record):
     answered_img = os.path.join(ANSWERED_DIR, os.path.basename(image_path))
     shutil.move(image_path, answered_img)
 
-    # Async upload
+    # Upload
     user_id = st.session_state.get("session_id", "unknown")
     async_upload_record({"image_path": answered_img, "json_path": answered_json}, user_id)
 
-    # Local cleanup
+    # Cleanup
     for folder in SAVE_DIRS:
         for path in [os.path.join(folder, os.path.basename(image_path)), os.path.join(folder, os.path.basename(json_path))]:
             if os.path.exists(path):
                 try:
                     os.remove(path)
-                    print(f"[Cleanup] Removed duplicate: {path}")
+                    st.write(f"🧹 Removed duplicate: `{path}`")
                 except Exception as e:
-                    print(f"[Warning] Could not delete {path}: {e}")
+                    st.warning(f"⚠️ Could not delete `{path}`: {e}")
