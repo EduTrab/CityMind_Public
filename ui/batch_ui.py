@@ -2,13 +2,11 @@
 import os
 import streamlit as st
 from llm.mcqa_generator import download_new_batch_llm_mcqa
-from utils.common.io_ops import save_and_move_image
-from llm.refinement import iterative_refinement
-from utils.common.cleanup import remove_stale_images
 from ui.batch_components import render_question_card, render_feedback_block, process_submission_batch
 
 def render_batch_interface(llm_server):
-    # One‑time defaults
+    # ————————————————————————————————————————————————————————————————————————————————————
+    # 1) Make sure we have our flags in session_state
     if "upload_notice" not in st.session_state:
         st.session_state.upload_notice = "🚀 Your answers are being saved and uploaded in the background."
     if "is_prefetching" not in st.session_state:
@@ -16,23 +14,33 @@ def render_batch_interface(llm_server):
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
-    # 🔁 Silent prefetch if needed before showing the form
-    if (
-        st.session_state.dataset_source != "Local Dataset"
-        and not st.session_state.prefetched_batch
-        and not st.session_state.is_prefetching
-    ):
+    # ————————————————————————————————————————————————————————————————————————————————————
+    # 2) Silent prefetch helper
+    def silent_prefetch():
         st.session_state.is_prefetching = True
         st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server=llm_server)
         st.session_state.is_prefetching = False
 
-    # ─── The form ────────────────────────────────────────────────────────────
+    # 3) Trigger exactly-once background prefetch if:
+    #    • We're not on Local Dataset
+    #    • There's a current batch in play
+    #    • We haven't already prefetched
+    #    • And we're not already mid‑prefetch
+    if (
+        st.session_state.dataset_source != "Local Dataset"
+        and st.session_state.current_batch
+        and not st.session_state.prefetched_batch
+        and not st.session_state.is_prefetching
+    ):
+        silent_prefetch()
+
+    # ————————————————————————————————————————————————————————————————————————————————————
+    # 4) All questions + feedback inside one form, with its own active submit button
     with st.form("batch_form"):
         for i, record in enumerate(st.session_state.current_batch):
             render_question_card(record, i)
             render_feedback_block(record, i)
 
-        # This is the *only* submit button now
         submit = st.form_submit_button(
             "Submit All Answers",
             disabled=st.session_state.is_prefetching,
@@ -42,17 +50,26 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # Once the user clicks it:
+    # ————————————————————————————————————————————————————————————————————————————————————
+    # 5) When they hit that form’s submit:
     if submit:
-        # 1) Save/refine their responses
+        # a) Process + save/refine
         with st.spinner("Processing submissions…"):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
 
-        # 2) Immediately prefetch the next batch
-        st.session_state.is_prefetching = True
-        st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server=llm_server)
-        st.session_state.is_prefetching = False
+        # b) Swap in the batch we prefetched earlier (or fall back to live download)
+        if st.session_state.prefetched_batch:
+            st.session_state.current_batch = st.session_state.prefetched_batch
+            st.session_state.prefetched_batch = []
+        else:
+            st.session_state.current_batch = download_new_batch_llm_mcqa(
+                llm_server=llm_server
+            )
 
-        # 3) Rerun so the UI shows the freshly prefetched questions
+        # c) Immediately fire off the next background prefetch
+        if st.session_state.dataset_source != "Local Dataset":
+            silent_prefetch()
+
+        # d) Rerun so the UI shows the new questions
         st.experimental_rerun()
