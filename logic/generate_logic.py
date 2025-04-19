@@ -1,20 +1,20 @@
 import streamlit as st
 from llm.mcqa_generator import download_new_batch_llm_mcqa
 
-
 def handle_generation_button():
     # 1) On every run, if we've already prefetched a batch, consume it now
     if st.session_state.prefetched_batch:
         st.session_state.current_batch = st.session_state.prefetched_batch
         st.session_state.prefetched_batch = []
 
-    # 2) Only also on a fresh click, generate a brand-new batch
+    # 2) Only when the user actually clicks “LLM closed Q&A”, download a fresh batch
     if not st.button("LLM closed Q&A"):
         return
 
     st.session_state.question_mode = "llm_mcqa"
 
     if st.session_state.dataset_source == "Local Dataset":
+        # Local dataset: process only uploaded records
         if st.session_state.local_records:
             batch = st.session_state.local_records[:st.session_state.batch_size]
             remaining = st.session_state.local_records[st.session_state.batch_size:]
@@ -37,7 +37,7 @@ def handle_generation_button():
                 "Please upload new images or select the Default Dataset from the sidebar."
             )
     else:
-        # on button-click in Default or City mode, always download a fresh batch
+        # Default or City mode: always download a fresh batch on click
         st.session_state.current_batch = download_new_batch_llm_mcqa(
             llm_server=st.session_state.llm_server
         )
