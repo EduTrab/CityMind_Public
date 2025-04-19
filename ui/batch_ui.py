@@ -7,6 +7,7 @@ from llm.refinement import iterative_refinement
 from utils.common.cleanup import remove_stale_images
 from ui.batch_components import render_question_card, render_feedback_block, process_submission_batch
 
+
 def render_batch_interface(llm_server):
     if "upload_notice" not in st.session_state:
         st.session_state.upload_notice = "🚀 Your answers are being saved and uploaded in the background."
@@ -15,36 +16,33 @@ def render_batch_interface(llm_server):
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
-    # Wrap questions + feedback in a form to suppress reruns on radio changes
+    # Wrap everything in one form, with its own submit button
     with st.form("batch_form"):
         for i, record in enumerate(st.session_state.current_batch):
             render_question_card(record, i)
             render_feedback_block(record, i)
-        st.form_submit_button(label="", disabled=True)
 
-    # Trigger background prefetch silently (⚠️ NO user-visible logs)
-    def silent_prefetch():
+        # This is the button that *actually* submits the form
+        submit = st.form_submit_button(
+            label="Submit All Answers",
+            disabled=st.session_state.is_prefetching,
+            help=(
+                "Please wait until next batch is downloaded before submitting."
+                if st.session_state.is_prefetching else None
+            )
+        )
+
+    if submit:
+        # 1️⃣ Process and save their answers
+        with st.spinner("Processing submissions…"):
+            process_submission_batch(st.session_state.current_batch, llm_server)
+            st.session_state.feedback_reset_counter += 1
+
+        # 2️⃣ Immediately prefetch your next batch
         st.session_state.is_prefetching = True
         st.session_state.prefetched_batch = download_new_batch_llm_mcqa(llm_server=llm_server)
         st.session_state.is_prefetching = False
 
-    if (
-        st.session_state.dataset_source != "Local Dataset"
-        and not st.session_state.prefetched_batch
-        and not st.session_state.is_prefetching
-    ):
-        silent_prefetch()
+        # 3️⃣ Reset the form (so our next render starts fresh)
+        st.experimental_rerun()
 
-    # OUTSIDE the form: Real Submit Button
-    submit_disabled = st.session_state.get("is_prefetching", False)
-    submit_label = "Submit All Answers" if not submit_disabled else "⏳ Prefetching next batch..."
-    submit_help = None if not submit_disabled else "Wait until next batch is downloaded before submitting."
-
-    if submit_disabled:
-        st.caption("🔒 Please wait — next batch is still being prepared...")
-
-    if st.button(label=submit_label, disabled=submit_disabled, help=submit_help):
-        with st.spinner("Processing submissions..."):
-            process_submission_batch(st.session_state.current_batch, llm_server)
-            st.session_state.feedback_reset_counter += 1
-            st.rerun()
