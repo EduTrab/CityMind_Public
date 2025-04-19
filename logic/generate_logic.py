@@ -3,17 +3,17 @@ from llm.mcqa_generator import download_new_batch_llm_mcqa
 
 def handle_generation_button():
     """
-    Called on every script run.  Renders the "LLM closed Q&A" button
-    and, when clicked, either swaps in a prefetched batch or downloads a fresh one.
+    When the user clicks "LLM closed Q&A", advance to the next batch:
+      - If we've already prefetched one, swap it in.
+      - Otherwise, download a fresh batch.
     """
-    # ── Only when the user clicks do we advance to the next batch ──
     if not st.button("LLM closed Q&A"):
         return
 
     st.session_state.question_mode = "llm_mcqa"
 
     if st.session_state.dataset_source == "Local Dataset":
-        # ── Local‑dataset path (unchanged) ──
+        # ── Local Dataset logic is unchanged ──
         if st.session_state.local_records:
             batch = st.session_state.local_records[:st.session_state.batch_size]
             remaining = st.session_state.local_records[st.session_state.batch_size:]
@@ -37,7 +37,7 @@ def handle_generation_button():
                 "Please upload new images or select the Default Dataset from the sidebar."
             )
     else:
-        # ── Default/City path: if there's a prefetched batch, use it; otherwise download fresh ──
+        # ── Default/City Dataset: swap in prefetched if available, else download fresh ──
         if st.session_state.prefetched_batch:
             st.session_state.current_batch = st.session_state.prefetched_batch
             st.session_state.prefetched_batch = []
