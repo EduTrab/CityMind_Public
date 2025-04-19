@@ -2,19 +2,18 @@ import streamlit as st
 from llm.mcqa_generator import download_new_batch_llm_mcqa
 
 def handle_generation_button():
-    # ── 1) On every run, if we've prefetched, swap it in immediately ──
-    if st.session_state.prefetched_batch:
-        st.session_state.current_batch = st.session_state.prefetched_batch
-        st.session_state.prefetched_batch = []
-
-    # ── 2) Only if the user clicks the button, fetch a brand‑new batch ──
+    """
+    Called on every script run.  Renders the "LLM closed Q&A" button
+    and, when clicked, either swaps in a prefetched batch or downloads a fresh one.
+    """
+    # ── Only when the user clicks do we advance to the next batch ──
     if not st.button("LLM closed Q&A"):
         return
 
     st.session_state.question_mode = "llm_mcqa"
 
     if st.session_state.dataset_source == "Local Dataset":
-        # ── your existing local‑dataset logic (unchanged) ──
+        # ── Local‑dataset path (unchanged) ──
         if st.session_state.local_records:
             batch = st.session_state.local_records[:st.session_state.batch_size]
             remaining = st.session_state.local_records[st.session_state.batch_size:]
@@ -29,7 +28,8 @@ def handle_generation_button():
                 st.session_state.local_records = remaining
             else:
                 st.warning(
-                    "⚠️ Could not process any of the selected images. They may be invalid or already processed."
+                    "⚠️ Could not process any of the selected images. "
+                    "They may be invalid or already processed."
                 )
         else:
             st.warning(
@@ -37,7 +37,11 @@ def handle_generation_button():
                 "Please upload new images or select the Default Dataset from the sidebar."
             )
     else:
-        # ── Default/City mode: fetch once on click ──
-        st.session_state.current_batch = download_new_batch_llm_mcqa(
-            llm_server=st.session_state.llm_server
-        )
+        # ── Default/City path: if there's a prefetched batch, use it; otherwise download fresh ──
+        if st.session_state.prefetched_batch:
+            st.session_state.current_batch = st.session_state.prefetched_batch
+            st.session_state.prefetched_batch = []
+        else:
+            st.session_state.current_batch = download_new_batch_llm_mcqa(
+                llm_server=st.session_state.llm_server
+            )

@@ -7,7 +7,11 @@ from ui.batch_components import (
 )
 
 def render_batch_interface(llm_server):
-    # ── Setup flags ─────────────────────────────────────────────────────
+    """
+    Displays the current batch in a form, processes submissions, 
+    and kicks off background prefetch *after* the UI draws.
+    """
+    # ── 1) Setup flags ────────────────────────────────────────────────
     if "upload_notice" not in st.session_state:
         st.session_state.upload_notice = (
             "🚀 Your answers are being saved and uploaded in the background."
@@ -17,16 +21,15 @@ def render_batch_interface(llm_server):
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
-    # ── Helpers ──────────────────────────────────────────────────────────
+    # ── 2) Helper to prefetch next batch ───────────────────────────────
     def silent_prefetch():
-        """Download the next batch into prefetched_batch."""
         st.session_state.is_prefetching = True
         st.session_state.prefetched_batch = download_new_batch_llm_mcqa(
             llm_server=llm_server
         )
         st.session_state.is_prefetching = False
 
-    # ── 1) Render the form & current batch ───────────────────────────────
+    # ── 3) Render the form for the *current* batch ─────────────────────
     with st.form("batch_form"):
         for i, record in enumerate(st.session_state.current_batch):
             render_question_card(record, i)
@@ -41,17 +44,14 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # ── 2) On form submit: process answers and rerun ────────────────────
+    # ── 4) When the user submits: save/refine answers, then clear feedback ──
     if submit:
         with st.spinner("Processing submissions…"):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
+        # (No explicit rerun needed—form_submit_button triggers a natural rerun.)
 
-        # The next run will swap in whatever is in prefetched_batch
-        st.experimental_rerun()
-
-    # ── 3) Only after the UI is drawn, kick off background prefetch ──────
-    #     (so the “Downloading…” logs appear *after* the questions)
+    # ── 5) *After* the UI has drawn, kick off background prefetch if needed ──
     if (
         st.session_state.dataset_source != "Local Dataset"
         and not st.session_state.prefetched_batch
