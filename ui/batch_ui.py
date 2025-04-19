@@ -1,3 +1,5 @@
+# File: ui/batch_ui.py
+
 import streamlit as st
 from llm.mcqa_generator import download_new_batch_llm_mcqa
 from ui.batch_components import (
@@ -8,7 +10,7 @@ from ui.batch_components import (
 
 def render_batch_interface(llm_server):
     """
-    Displays the current batch in a form, processes submissions, 
+    Displays the current batch in a form, processes submissions,
     and kicks off background prefetch *after* the UI draws.
     """
     # ── 1) Setup flags ────────────────────────────────────────────────
@@ -44,12 +46,17 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # ── 4) When the user submits: save/refine answers, then clear feedback ──
+    # ── 4) When the user submits: save/refine answers, then clear batch ──
     if submit:
         with st.spinner("Processing submissions…"):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
-        # (No explicit rerun needed—form_submit_button triggers a natural rerun.)
+
+        # Clear out the displayed batch so the form disappears
+        st.session_state.current_batch = []
+
+        # Immediately rerun so the top‑level logic shows the "no images" info
+        st.experimental_rerun()
 
     # ── 5) *After* the UI has drawn, kick off background prefetch if needed ──
     if (
