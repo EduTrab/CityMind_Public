@@ -82,26 +82,27 @@ def process_submission_batch(records, llm_server):
 
     # ✅ Process refined questions (feedback present)
     updated_records = []
-    for i, record in enumerate(records_with_feedback):
+    # ✅ Collect user answers from widget state just before saving
+    for i, record in enumerate(records_no_feedback):F
         key = f"llm_mcqa_radio_{i}"
         selected_raw = st.session_state.get(key)
+
+        # ⛳️ DEBUG PRINTS
+        st.write("----")
+        st.write(f"🔑 Widget key: {key}")
+        st.write(f"📥 Widget raw value: {selected_raw}")
+        st.write(f"🖼️  Image path: {record.get('image_path')}")
+        st.write(f"📋  MCQ: {record.get('mc_question', '')[:40]}...")
+
         if selected_raw:
             record["user_choice"] = selected_raw.split(")", 1)[0].strip()
         else:
             record["user_choice"] = "?"
 
-        st.write(f"🛠️ [WITH FEEDBACK] Q{i} | `{os.path.basename(record['image_path'])}` | user_choice = `{record['user_choice']}` | feedback: `{record['feedback']}`")
+        st.write(f"✅ Final choice: {record['user_choice']}")
 
-        refined, warning = iterative_refinement(record, llm_server, lightweight_model, max_iterations=2)
-        record.update({
-            "mc_question": refined.get("mc_question", record["mc_question"]),
-            "mc_options": refined.get("mc_options", record["mc_options"]),
-            "mc_correct": refined.get("mc_correct", record["mc_correct"]),
-            "mc_reason": refined.get("mc_reason", record["mc_reason"]),
-            "warning": warning,
-            "feedback": ""
-        })
-        updated_records.append(record)
+        save_and_move_image(record)
+
 
     # Save updated records into session
     st.session_state.current_batch = updated_records

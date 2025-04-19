@@ -31,7 +31,13 @@ def save_and_move_image(record):
     })
 
     # ✅ Debug: Confirm what we're saving
-    st.write(f"💾 Saving JSON for `{os.path.basename(json_path)}` with `user_choice`: `{data.get('user_choice')}`")
+    st.write("🧾 Saving JSON with data:")
+    st.json({
+        "file": os.path.basename(json_path),
+        "user_choice": data.get("user_choice"),
+        "mc_question": data.get("mc_question", "")[:80] + "...",
+        "mc_correct": data.get("mc_correct"),
+    })
 
     answered_json = os.path.join(ANSWERED_DIR, os.path.basename(json_path))
     with open(answered_json, 'w') as f:
