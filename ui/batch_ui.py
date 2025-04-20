@@ -11,7 +11,7 @@ from ui.batch_components import (
 def render_batch_interface(llm_server):
     """
     1) Show the current batch in a form
-    2) On submit: process & mark just_submitted
+    2) On submit: ensure at least one "Not Relevant" is selected, then process/refine
     3) After rendering: prefetch the next batch in background
     """
 
@@ -48,18 +48,22 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # ── 4) On submit: process answers/refinements & mark submission ──
+    # ── 4) On submit: validate “Not Relevant” + process answers/refinements ──
     if submit:
-        with st.spinner("Processing submissions…"):
-            process_submission_batch(st.session_state.current_batch, llm_server)
-            st.session_state.feedback_reset_counter += 1
+        # require at least one “Not Relevant”
+        if not any(r.get("user_choice") == "Not Relevant"
+                   for r in st.session_state.current_batch):
+            st.warning("⚠️ Please mark at least one image as Not Relevant before submitting.")
+        else:
+            with st.spinner("Processing submissions…"):
+                process_submission_batch(st.session_state.current_batch, llm_server)
+                st.session_state.feedback_reset_counter += 1
 
-        # Mark that we just submitted so the main app logic can hide
-        # the batch (if it's now empty) or re-show refined cards.
-        st.session_state.just_submitted = True
+            # mark submission so main app can clear or re-show as needed
+            st.session_state.just_submitted = True
 
-        st.rerun()
-
+            # re-run to redraw (either empty or with refined cards)
+            st.rerun()
 
     # ── 5) After rendering, kick off background prefetch if needed ─────
     if (
