@@ -30,7 +30,8 @@ def handle_generation_button():
                 st.session_state.local_records = remaining
             else:
                 st.warning(
-                    "⚠️ Could not process any of the selected images. They may be invalid or already processed."
+                    "Could not process any of the selected images. "
+                    "They may be invalid or already processed."
                 )
         else:
             st.warning(
@@ -38,7 +39,7 @@ def handle_generation_button():
                 "Please upload new images or select the Default Dataset from the sidebar."
             )
     else:
-        # Default or City dataset
+        # Default / City dataset
         if st.session_state.prefetched_batch:
             st.session_state.current_batch = st.session_state.prefetched_batch
             st.session_state.prefetched_batch = []
@@ -47,5 +48,5 @@ def handle_generation_button():
                 llm_server=st.session_state.llm_server
             )
 
-    # We’re now displaying a fresh batch → clear the just_submitted marker
+    # We’re now showing a fresh batch → clear the just_submitted marker
     st.session_state.just_submitted = False

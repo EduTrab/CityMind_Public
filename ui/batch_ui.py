@@ -11,7 +11,7 @@ from ui.batch_components import (
 def render_batch_interface(llm_server):
     """
     1) Show the current batch in a form
-    2) On submit: process & rerun immediately
+    2) On submit: process & mark just_submitted
     3) After rendering: prefetch the next batch in background
     """
 
@@ -48,17 +48,18 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # ── 4) On submit: process answers/refinements & then rerun ─────────
+    # ── 4) On submit: process answers/refinements & mark submission ──
     if submit:
         with st.spinner("Processing submissions…"):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
 
-        # Mark that we just submitted, so the main layout hides the batch
+        # Mark that we just submitted so the main app logic can hide
+        # the batch (if it's now empty) or re-show refined cards.
         st.session_state.just_submitted = True
 
-        # Immediately rerun so the UI clears or shows any refined items
-        st.experimental_rerun()
+        st.rerun()
+
 
     # ── 5) After rendering, kick off background prefetch if needed ─────
     if (
