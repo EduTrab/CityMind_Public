@@ -10,12 +10,12 @@ from ui.batch_components import (
 
 def render_batch_interface(llm_server):
     """
-    Display the current batch in a form, handle submissions
-    (including LLM‑driven refinements), then immediately rerun
-    so the UI clears or shows refined items, and finally
-    prefetch the next batch in the background.
+    1) Show the current batch in a form
+    2) On submit: process & rerun immediately
+    3) After rendering: prefetch the next batch in background
     """
-    # ── 1) Setup notice & prefetch flag ────────────────────────────
+
+    # ── 1) Ensure our flags exist ──────────────────────────────────────
     if "upload_notice" not in st.session_state:
         st.session_state.upload_notice = (
             "🚀 Your answers are being saved and uploaded in the background."
@@ -25,7 +25,7 @@ def render_batch_interface(llm_server):
 
     st.markdown(f"🚀 {st.session_state.upload_notice}")
 
-    # ── 2) Helper to prefetch next batch ────────────────────────────
+    # ── 2) Prefetch helper ────────────────────────────────────────────
     def silent_prefetch():
         st.session_state.is_prefetching = True
         st.session_state.prefetched_batch = download_new_batch_llm_mcqa(
@@ -33,7 +33,7 @@ def render_batch_interface(llm_server):
         )
         st.session_state.is_prefetching = False
 
-    # ── 3) Render form for the current batch ────────────────────────
+    # ── 3) Render the form for the current batch ───────────────────────
     with st.form("batch_form"):
         for i, record in enumerate(st.session_state.current_batch):
             render_question_card(record, i)
@@ -48,21 +48,19 @@ def render_batch_interface(llm_server):
             )
         )
 
-    # ── 4) On submit: process answers/refinements & mark submission ──
+    # ── 4) On submit: process answers/refinements & then rerun ─────────
     if submit:
         with st.spinner("Processing submissions…"):
             process_submission_batch(st.session_state.current_batch, llm_server)
             st.session_state.feedback_reset_counter += 1
 
-        # Mark that we just submitted, so main() can clear the UI
+        # Mark that we just submitted, so the main layout hides the batch
         st.session_state.just_submitted = True
 
-        # Force an immediate rerun so:
-        #  • if current_batch is now empty → you see only the intro + LLM closed Q&A
-        #  • if some remain (had feedback) → you see their updated questions/options
+        # Immediately rerun so the UI clears or shows any refined items
         st.experimental_rerun()
 
-    # ── 5) Background prefetch (only when a batch is displayed) ─────
+    # ── 5) After rendering, kick off background prefetch if needed ─────
     if (
         st.session_state.dataset_source != "Local Dataset"
         and not st.session_state.prefetched_batch
