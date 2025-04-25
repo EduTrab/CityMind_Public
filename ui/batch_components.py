@@ -26,12 +26,12 @@ def render_question_card(record, i):
         displayed = [
             f"{letter}) {options.get(letter, '')}" for letter in answer_choices
         ]
-        user_choice = record.get("user_choice") or answer_choices[0]
+        user_choice = record.get("user_choice") or answer_choices[-1]
 
         chosen = st.radio(
             label=f"Select answer (image {i+1})",
             options=displayed,
-            index=answer_choices.index(user_choice) if user_choice in answer_choices else 0,
+            index=answer_choices.index(user_choice) if user_choice in answer_choices else len(answer_choices)-1,
             key=f"llm_mcqa_radio_{i}"
         )
         record["user_choice"] = chosen.split(")", 1)[0].strip()
