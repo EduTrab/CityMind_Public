@@ -7,7 +7,7 @@ from utils.streetview.fetch import search_and_download_random
 
 
 
-def prompt_text(n=20):
+def prompt_text(n=2):
     correct_answer_number= random.randint(1,6)
     absurdum_answer_number=random.randint(1,6)
 
@@ -174,7 +174,7 @@ def prompt_text(n=20):
     ]
 
 
-    sampled_topics = random.sample(topics, int(len(topics) * n / 100))
+    sampled_topics = random.sample(topics, n)
     concatenated_topics = "\n".join(sampled_topics)
 
 
