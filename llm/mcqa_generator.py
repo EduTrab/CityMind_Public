@@ -28,7 +28,7 @@ def prompt_text(n=20):
     absurdum_answer_letter=number_to_letter[absurdum_answer_number]
 
 
-topics = [
+    topics = [
     """
     * **Scene Understanding**:
     - Ask complex questions about the overall theme or gist of the scene
