@@ -167,14 +167,6 @@ def prompt_text(n=20):
     REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. Mention which of the  options is the absurdum clearly false]
 
 
-    **Key Changes and Explanations:**
-
-    *   **"Directly Observable"** instead of "Direct Observable": Added the "ly" to make it an adverb.
-    *   **"Image-Dependent Questions"** instead of "Image-Based Only":  Reworded this constraint to be clearer and more active. Also changed explanation, removed a repetition ("only") and fixed a misspelling ("eaven").
-    *   **Combined Constraints:** Combined the first two original constraints to avoid redundancy, as they essentially convey the same idea.
-    *   **"of why the answer is correct"** added in the REASON part of the output format.
-    *   **"Also, a short explanation..."** added in the REASON part to clarify that the reasoning should also address why the other options are wrong.
-    *   **Minor wording tweaks:** Made small changes throughout for better readability (e.g., "the true question" changed to "why the answer is correct").
 
     **Example of Depth**:
     Poor Example (Superficial):
@@ -186,8 +178,7 @@ def prompt_text(n=20):
     This improved question requires the viewer to look for multiple visual clues  and interpret them, instead of  merely identifying a single object.
 
 
-    Your goal: Produce an insightful, multi-faceted urban studies question that tests the model’s cognitive prowess by integrating specific observations into a unified, closed-ended question with six choices, and only one well-supported correct answer in Letter({correct_answer_letter}).
-    """
+      """
 
     return prompt
 
