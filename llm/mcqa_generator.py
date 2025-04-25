@@ -27,7 +27,53 @@ def prompt_text(n=20):
     correct_answer_letter=number_to_letter[correct_answer_number]
     absurdum_answer_letter=number_to_letter[absurdum_answer_number]
 
-    topics=["""
+
+topics = [
+    """
+    * **Scene Understanding**:
+    - Ask complex questions about the overall theme or gist of the scene
+    - Answerable by a quick glance at the whole image, not individual objects
+    """,
+    """
+    * **Instance Identity**:
+    - Ask what a specific object is or whether it exists in the image
+    - Requires only a brief look at the referred object
+    """,
+    """
+    * **Instance Attribute**:
+    - Ask about fine-grained attributes (color, shape, subtype) of one object
+    - Requires close inspection of that object’s visual appearance
+    """,
+    """
+    * **Instance Localization**:
+    - Ask where a particular object is located in the image
+    - Depends on recognizing its coordinates or position
+    """,
+    """
+    * **Instance Counting**:
+    - Start with “How many …” and require counting all instances of an object
+    - Choices should be numeric
+    """,
+    """
+    * **Spatial Relation**:
+    - Ask about the spatial relationship between two objects
+    - Relies on comparing their relative positions
+    """,
+    """
+    * **Instance Interaction**:
+    - Ask what one object is doing to / with another, or their connection
+    - Requires finding both objects and reasoning about their interaction
+    """,
+    """
+    * **Visual Reasoning**:
+    - Ask higher-level “why” or “how” questions that need background knowledge
+    - Do not reveal visual details in the question itself
+    """,
+    """
+    * **Text Recognition**:
+    - Ask about text visible in the image without mentioning OCR
+    """,
+    """
     * **Density and Variability**:
     - How many structures, people, or elements are present
     - Presence or absence of specific features
@@ -127,6 +173,7 @@ def prompt_text(n=20):
     """
     ]
 
+
     sampled_topics = random.sample(topics, int(len(topics) * n / 100))
     concatenated_topics = "\n".join(sampled_topics)
 
@@ -165,7 +212,7 @@ def prompt_text(n=20):
     F) [Option 6]
     CORRECT_ANSWER: [A, B, C, D, E, or F]
     REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. Mention which of the  options is the absurdum clearly false]
-
+    TOPIC: [Short explanation of why you chose this topic from **Topics for Question Generation:**, especially why it is relevant for this image]
 
 
     **Example of Depth**:
