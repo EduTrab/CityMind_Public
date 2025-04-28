@@ -50,11 +50,6 @@ def prompt_text(n=2):
     - Depends on recognizing its coordinates or position
     """,
     """
-    * **Instance Counting**:
-    - Start with “How many …” and require counting all instances of an object
-    - Choices should be numeric
-    """,
-    """
     * **Spatial Relation**:
     - Ask about the spatial relationship between two objects
     - Relies on comparing their relative positions
@@ -68,10 +63,6 @@ def prompt_text(n=2):
     * **Visual Reasoning**:
     - Ask higher-level “why” or “how” questions that need background knowledge
     - Do not reveal visual details in the question itself
-    """,
-    """
-    * **Text Recognition**:
-    - Ask about text visible in the image without mentioning OCR
     """,
     """
     * **Density and Variability**:
