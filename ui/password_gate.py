@@ -17,11 +17,14 @@ def check_password():
     
     if username:
     # ✅ DEBUG PRINT
+        st.session_state.username= username
+        st.write(f"your username is {st.session_state.username}")
         print("Entered username:", username)
         
         st.session_state.authenticated = True
         st.rerun()
-        st.session_state.username= username
+        
+
 
 
 
