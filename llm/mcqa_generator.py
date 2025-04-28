@@ -218,7 +218,9 @@ def prompt_text(n=2):
     *   **Image-Dependent Questions:** Questions should be crafted so that they cannot be answered correctly by only reading the answer choices and without examining the image. The image must be essential to determining the correct answer. (For example, avoid questions where only one answer choice mentions "greenery" if the focus area is **Sustainability**. The user should need to look at the image to determine if greenery is present.)
     *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
     *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
-    
+    *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
+   
+
     **Output Format:**
 
     QUESTION: [Your question text]
