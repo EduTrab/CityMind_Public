@@ -53,16 +53,9 @@ def prompt_text(n=2):
     """
     * **Instance Localization**:
         - **Core question**: “Where is object X located in the frame?”
-        - **Analyse**: bounding box or spatial coordinates, relation to frame center, depth cues.
+        - **Analyse**: relation to frame center, depth cues.
         - **Consider**: scale invariance, partial occlusion, and perspective distortion.
         - **Avoid**: narrating exact pixel coordinates unless required; semantic judgments belong to other categories.
-    """,
-    """
-    * **Spatial Relation**:
-        - **Core question**: “How is object A positioned relative to object B?”
-        - **Analyse**: distance, direction (left/right, above/below, front/behind), alignment.
-        - **Consider**: 3-D perspective and context that could flip near/far judgments.
-        - **Avoid**: assuming causal relationships or social hierarchy from spatial proximity alone.
     """,
     """
     * **Instance Interaction**:
@@ -81,16 +74,9 @@ def prompt_text(n=2):
     """
     * **Density and Variability**:
         - **Core question**: “How many and how diverse are the elements present?”
-        - **Analyse**: count of people/vehicles/structures, heterogeneity of types and styles.
+        - **Analyse**: Consider people/vehicles/structures, qualitative heterogeneity of types and styles.
         - **Consider**: occlusion and perspective that may hide elements.
         - **Avoid**: exact headcounts when the scene is too crowded; provide ranges instead.
-    """,
-    """
-    * **Position and Relationship**:
-        - **Core question**: “What is the spatial arrangement and orientation of key elements?”
-        - **Analyse**: grid vs. organic street pattern, clustering of amenities, edge conditions.
-        - **Consider**: human scale (eye-level view) vs. aerial perspective differences.
-        - **Avoid**: mixing this category with policy or economic implications—that belongs elsewhere.
     """,
     """
     * **Land Use and Built Environment**:
