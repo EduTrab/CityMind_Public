@@ -31,136 +31,178 @@ def prompt_text(n=2):
     topics = [
     """
     * **Scene Understanding**:
-    - Ask complex questions about the overall theme or gist of the scene
-    - Answerable by a quick glance at the whole image, not individual objects
+        - **Core question**: “What is the overall theme or purpose of this place?”
+        - **Analyse**: global layout, dominant land-use, activity level, mood, time-of-day/season cues.
+        - **Consider**: lighting, color palette, density, presence of nature vs. built form.
+        - **Avoid**: zooming into single objects, conjecturing about non-visible interiors, or inferring residents’ demographics beyond what is visually evident.
     """,
     """
     * **Instance Identity**:
-    - Ask what a specific object is or whether it exists in the image
-    - Requires only a brief look at the referred object
+        - **Core question**: “What is this specific object, or does object X appear here?”
+        - **Analyse**: salient shape, size, iconography, material, immediately surrounding context.
+        - **Consider**: viewpoint distortions, occlusions, and class look-alikes.
+        - **Avoid**: extrapolating attributes (e.g., brand, model year) unless unmistakably visible.
     """,
     """
     * **Instance Attribute**:
-    - Ask about fine-grained attributes (color, shape, subtype) of one object
-    - Requires close inspection of that object’s visual appearance
+        - **Core question**: “Which fine-grained attributes describe object X?”
+        - **Analyse**: color, texture, subtype, condition, ornamentation.
+        - **Consider**: lighting effects and reflections that may alter hue/texture.
+        - **Avoid**: inferring functional or hidden traits (e.g., taste, price, policy compliance).
     """,
     """
     * **Instance Localization**:
-    - Ask where a particular object is located in the image
-    - Depends on recognizing its coordinates or position
+        - **Core question**: “Where is object X located in the frame?”
+        - **Analyse**: bounding box or spatial coordinates, relation to frame center, depth cues.
+        - **Consider**: scale invariance, partial occlusion, and perspective distortion.
+        - **Avoid**: narrating exact pixel coordinates unless required; semantic judgments belong to other categories.
     """,
     """
     * **Spatial Relation**:
-    - Ask about the spatial relationship between two objects
-    - Relies on comparing their relative positions
+        - **Core question**: “How is object A positioned relative to object B?”
+        - **Analyse**: distance, direction (left/right, above/below, front/behind), alignment.
+        - **Consider**: 3-D perspective and context that could flip near/far judgments.
+        - **Avoid**: assuming causal relationships or social hierarchy from spatial proximity alone.
     """,
     """
     * **Instance Interaction**:
-    - Ask what one object is doing to / with another, or their connection
-    - Requires finding both objects and reasoning about their interaction
+        - **Core question**: “What is object A doing to/with object B?”
+        - **Analyse**: posture, contact points, motion blur cues, tool use, shared affordances.
+        - **Consider**: sequential frames if available to confirm dynamic action.
+        - **Avoid**: attributing intent, emotion, or future actions not visually grounded.
     """,
     """
     * **Visual Reasoning**:
-    - Ask higher-level “why” or “how” questions that need background knowledge
-    - Do not reveal visual details in the question itself
+        - **Core question**: “Why/How is something happening here?”
+        - **Analyse**: combine visible evidence with common-sense or world knowledge (e.g., rain → umbrellas).
+        - **Consider**: temporal logic, cultural practices, physical plausibility.
+        - **Avoid**: speculative storytelling beyond testable visual-logical inference.
     """,
     """
     * **Density and Variability**:
-    - How many structures, people, or elements are present
-    - Presence or absence of specific features
+        - **Core question**: “How many and how diverse are the elements present?”
+        - **Analyse**: count of people/vehicles/structures, heterogeneity of types and styles.
+        - **Consider**: occlusion and perspective that may hide elements.
+        - **Avoid**: exact headcounts when the scene is too crowded; provide ranges instead.
     """,
     """
     * **Position and Relationship**:
-    - The spatial arrangement of elements
-    - Proximity and orientation of buildings, sidewalks, public furniture, etc.
+        - **Core question**: “What is the spatial arrangement and orientation of key elements?”
+        - **Analyse**: grid vs. organic street pattern, clustering of amenities, edge conditions.
+        - **Consider**: human scale (eye-level view) vs. aerial perspective differences.
+        - **Avoid**: mixing this category with policy or economic implications—that belongs elsewhere.
     """,
     """
     * **Land Use and Built Environment**:
-    - Building types, density, architectural styles, apparent zoning (commercial vs. residential)
-    - Infrastructure (roads, sidewalks, utilities), presence of green space
-    - Signs of decay, renovation, or development
+        - **Core question**: “Which land-use types and infrastructural elements are visible?”
+        - **Analyse**: building footprints, setbacks, road hierarchy, signage indicating zoning.
+        - **Consider**: transition zones (commercial ground floor, residential upper floors).
+        - **Avoid**: guessing legal zoning designations unless signage explicitly shows them.
     """,
     """
     * **Social Interaction and Public Space**:
-    - How people might use the space (walking, cycling, gathering)
-    - Evidence of social activity, accessibility, and inclusivity
-    - Presence of street furniture, seating, or gathering spots
+        - **Core question**: “How are people using shared outdoor areas?”
+        - **Analyse**: posture (walking, sitting, gathering), group sizes, body orientation.
+        - **Consider**: supportive infrastructure (benches, shade) that enables interaction.
+        - **Avoid**: assumptions about conversations or social ties not visually supported.
     """,
     """
     * **Types and Character of Spaces for Social Interaction**:
-    - Identifiable typologies (plazas, squares, parks, multipurpose areas)
-    - Physical or spatial features encouraging or hindering interaction (benches, raised platforms, variations in level)
+        - **Core question**: “What typology best describes this gathering space?”
+        - **Analyse**: enclosure ratio, edges vs. center activation, surface treatments.
+        - **Consider**: temporary vs. permanent fixtures (pop-up seating, seasonal market stalls).
+        - **Avoid**: conflating circulation corridors with bona-fide gathering nodes.
     """,
     """
     * **Safety and Perceived Safety**:
-    - Visual cues indicating safety or unsafety (lighting, visibility, foot traffic)
-    - Consideration of different user perspectives (e.g., young female, older adults, etc.)
+        - **Core question**: “What visual cues indicate safety or its absence?”
+        - **Analyse**: lighting, sightlines, surveillance (eyes on the street), active frontage.
+        - **Consider**: user diversity (e.g., signage readability, curb ramps).
+        - **Avoid**: fear-mongering or stereotyping based on user appearance.
     """,
     """
     * **Culture and Identity**:
-    - Local landmarks, cultural markers, public art
-    - Ephemeral elements that contribute to a neighborhood’s identity
+        - **Core question**: “Which cultural markers convey local identity?”
+        - **Analyse**: murals, flags, language on signs, vernacular architecture.
+        - **Consider**: temporary cultural events (street fairs, decorations).
+        - **Avoid**: reducing culture to monolithic traits; acknowledge multiplicity if visible.
     """,
     """
     * **Atmosphere and Urban Dynamics**:
-    - Overall vibe or liveliness
-    - Indicators of gentrification, urban renewal processes, or community changes
+        - **Core question**: “What is the vibe or energy level?”
+        - **Analyse**: pedestrian flow, noise cues (open mouths, musicians), lighting warmth.
+        - **Consider**: weather and time affecting foot traffic.
+        - **Avoid**: prescriptive value judgments (“good” or “bad” vibe) without context.
     """,
     """
     * **Livability and Quality of Life**:
-    - Comfort, convenience, and well-being factors observed
-    - Amenities, cleanliness, environmental quality
+        - **Core question**: “How comfortable and convenient does the environment appear?”
+        - **Analyse**: shade, seating, greenery, upkeep, mixed uses within walking distance.
+        - **Consider**: inclusivity of amenities (playgrounds, senior seating).
+        - **Avoid**: projecting personal lifestyle preferences onto evaluation.
     """,
     """
     * **Transportation and Mobility**:
-    - Modes of transport visible
-    - Traffic flow, pedestrian infrastructure, parking availability
-    - Accessibility for different mobility needs
+        - **Core question**: “Which transport modes and infrastructure are present?”
+        - **Analyse**: sidewalks, bike lanes, transit stops, parking, traffic flow.
+        - **Consider**: accessibility features (curb cuts, tactile paving).
+        - **Avoid**: inferring service frequency or ridership stats beyond visible indicators.
     """,
     """
     * **Urban Design and Aesthetics**:
-    - Overall visual character, streetscape design
-    - Presence of public art, signage, landscaping, cleanliness
+        - **Core question**: “How do form, proportion, and detailing contribute to streetscape?”
+        - **Analyse**: façade rhythm, material palette, signage coherence, street furniture style.
+        - **Consider**: visual hierarchy, maintenance level.
+        - **Avoid**: equating novelty with quality; discuss aesthetics in descriptive, not prescriptive, terms.
     """,
     """
     * **Economic Activity**:
-    - Types of businesses present
-    - Signs of economic vitality or decline
-    - Presence of advertising or commercial activity
+        - **Core question**: “What signs of commerce or economic vitality are visible?”
+        - **Analyse**: open storefronts, market stalls, advertising density, vacancy signs.
+        - **Consider**: time-of-day influence on business activity.
+        - **Avoid**: projecting long-term economic health from a single snapshot.
     """,
     """
     * **Sustainability and Environmental Aspects**:
-    - Presence of green infrastructure (trees, parks, green roofs)
-    - Evidence of sustainable practices (bike lanes, solar panels)
-    - Potential environmental concerns (pollution, lack of greenery)
+        - **Core question**: “Which sustainable features or concerns are evident?”
+        - **Analyse**: green roofs, permeable pavements, bike infrastructure, tree canopy.
+        - **Consider**: visible pollution sources (smoke, litter) and mitigation measures.
+        - **Avoid**: claiming carbon metrics or policy compliance without data.
     """,
     """
     * **Cultural Significance**:
-    - Presence of cultural institutions (museums, theaters)
-    - Evidence of diverse communities, cultural events, or celebrations
+        - **Core question**: “Does the image show culturally significant institutions or events?”
+        - **Analyse**: museums, theaters, heritage plaques, crowd behavior suggesting festivals.
+        - **Consider**: contextual signage that may point to historical importance.
+        - **Avoid**: overstating importance without corroborating visual evidence.
     """,
     """
     * **Accessibility and Inclusivity**:
-    - Features for people with disabilities (ramps, wide sidewalks)
-    - Indications the space is welcoming to diverse groups (signage, language use, etc.)
+        - **Core question**: “Is the environment welcoming and usable for diverse abilities and groups?”
+        - **Analyse**: ramps, tactile strips, inclusive signage, shelter, seating diversity.
+        - **Consider**: sightlines, lighting uniformity, absence of barriers.
+        - **Avoid**: assuming legal compliance; focus on visible affordances.
     """,
     """
     * **Regulatory and Planning Aspects**:
-    - Evidence of zoning regulations (signage, building heights)
-    - Traffic calming measures, public notices about planning
-    - Construction permits, posted regulations
+        - **Core question**: “What hints of planning or regulation are observable?”
+        - **Analyse**: posted permits, zoning notices, traffic-calming devices, construction hoardings.
+        - **Consider**: temporary regulations (event closures, COVID signage).
+        - **Avoid**: legal interpretation; stick to visible compliance indicators.
     """,
     """
     * **Temporality and Change**:
-    - Indicators of the time of day or season
-    - Signs of construction or renovation
-    - Temporary installations or events
+        - **Core question**: “What suggests the time of day, season, or ongoing change?”
+        - **Analyse**: shadows, attire, foliage, construction equipment, pop-up structures.
+        - **Consider**: cyclical vs. one-off changes (holiday decor vs. redevelopment).
+        - **Avoid**: conflating age of buildings with neglect without maintenance evidence.
     """,
     """
     * **Materiality and Texture**:
-    - Types of materials used in buildings and streetscape
-    - Condition of surfaces (pavement, walls)
-    - The interplay of light and shadow
+        - **Core question**: “What materials and surface qualities define the scene?”
+        - **Analyse**: masonry vs. glass vs. wood, pavement texture, patina, reflectivity.
+        - **Consider**: weathering patterns that hint at age or upkeep.
+        - **Avoid**: inferring structural integrity or cost from surface appearance alone.
     """
     ]
 
