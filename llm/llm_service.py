@@ -188,7 +188,7 @@ class MultiLLMService:
                 return self._send_query_anthropic(image_path, prompt, model)
             elif model in ["moondream-standard", "moondream-finetuned"]:
                 return self._send_query_moondream(image_path, prompt, model)
-            elif model in ["gemini-reasoning", "gemini-2.0-flash-lite", "gemini-1.5-flash-002"]:
+            elif model in ["gemini-reasoning","gemini-2.5-flash-preview-04-17", "gemini-2.0-flash-lite", "gemini-1.5-flash-002"]:
                 return self._send_query_gemini(image_path, prompt, model)
             else:
                 return "Error: Unsupported model specified."
