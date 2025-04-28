@@ -200,7 +200,7 @@ def prompt_text(n=2):
     *   **Challenging:** The question should require careful observation and analysis of the image, not just a superficial description.
     *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
     *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
-    *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". Be sure to highlight Question and each Options. 
+    *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
     
     **Output Format:**
 
