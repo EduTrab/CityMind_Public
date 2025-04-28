@@ -8,17 +8,24 @@ def check_password():
         return True
 
     st.title("🔐 CityMind Access")
-    pw = st.text_input("Enter password to continue:", type="password")
+    
+    st.write("Please authenticate using your username formatted as name_surname_birthyear")
+    
 
+    st.write("Username format: name_surname_birthyear")
+    username = st.text_input("Enter username:", placeholder="john_doe_1990")
+    
+    if username:
     # ✅ DEBUG PRINT
-    print("Entered:", pw)
-    print("Expected:", st.secrets.get("app_password"))
-
-    if pw and pw == st.secrets.get("app_password", ""):
+        print("Entered username:", username)
+        
         st.session_state.authenticated = True
         st.rerun()
-    elif pw:
-        st.error("❌ Incorrect password. Please try again.")
+        st.session_state.username= username
+
+
+
+
 
     if not st.session_state.authenticated:
         st.stop()
