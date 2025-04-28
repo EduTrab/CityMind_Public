@@ -76,7 +76,8 @@ def process_submission_batch(records, llm_server):
             "mc_correct": refined.get("mc_correct", record["mc_correct"]),
             "mc_reason": refined.get("mc_reason", record["mc_reason"]),
             "warning": warning,
-            "feedback": ""
+            "feedback": "",
+            "user": st.session_state.username,
         })
         updated_records.append(record)
 
