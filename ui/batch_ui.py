@@ -60,7 +60,7 @@ def render_batch_interface(llm_server):
         
         # Require "Not Relevant" selection only for full batches
         if not has_not_relevant and is_full_batch:
-            st.warning("⚠️ Please mark at least one image as Not Relevant before submitting. We want to save only the best N% questions for our dataset. ")
+            st.warning("⚠️ Please mark at least one image as Not Relevant before submitting. We want to save only the best N% questions for our dataset to make it more selective. ")
         else:
             with st.spinner("Processing submissions…"):
                 process_submission_batch(st.session_state.current_batch, llm_server)
