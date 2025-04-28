@@ -40,7 +40,7 @@ def render_batch_interface(llm_server):
             render_feedback_block(record, i)
 
         submit = st.form_submit_button(
-            "Submit All Answers",
+            "Submit All Answers", 
             disabled=st.session_state.is_prefetching,
             help=(
                 "⏳ Still downloading the next batch…"
@@ -51,8 +51,15 @@ def render_batch_interface(llm_server):
     # ── 4) On submit: validate “Not Relevant” + process answers/refinements ──
     if submit:
         # require at least one “Not Relevant”
-        if not any(r.get("user_choice") == "Not Relevant"
-                   for r in st.session_state.current_batch):
+        # Check if at least one image is marked as "Not Relevant"
+        has_not_relevant = any(r.get("user_choice") == "Not Relevant" 
+                              for r in st.session_state.current_batch)
+        
+        # Check if we're looking at a full batch (not a refined subset)
+        is_full_batch = len(st.session_state.current_batch) == st.session_state.get("batch_size", 3)
+        
+        # Require "Not Relevant" selection only for full batches
+        if not has_not_relevant and is_full_batch:
             st.warning("⚠️ Please mark at least one image as Not Relevant before submitting.")
         else:
             with st.spinner("Processing submissions…"):
