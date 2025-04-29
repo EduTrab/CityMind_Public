@@ -205,20 +205,13 @@ def prompt_text(n=2):
     **Input:** A Street View image (provided separately).
 
     **Task:** Examine the provided Street View image meticulously. Based on your observations of the image alone, generate **one** challenging, closed-ended question relevant to one of the following topics, with **exactly six** answers (labeled A, B, C, D, E, and F), 1 true, 4 possibles but objectivly false for the given picture and 1 absurdum answers.
-    The Correct answer must corresponding to letter ({correct_answer_letter}), while the absurdum to letter ({absurdum_answer_letter}).
+    The Correct answer must corresponding to letter ({correct_answer_letter}).
 
     **Topics for Question Generation:**
     Your question should focus on aspects observable in the image that relate to key concepts in urban analysis, such as:
     {concatenated_topics}
 
 
-    **Constraints:**
-
-    *   **Directly Observable:** The question and its answer choices MUST be answerable solely from the information visible in the provided image. Do not make assumptions or introduce information not directly observable.
-    *   **Image-Dependent Questions:** Questions should be crafted so that they cannot be answered correctly by only reading the answer choices and without examining the image. The image must be essential to determining the correct answer. (For example, avoid questions where only one answer choice mentions "greenery" if the focus area is **Sustainability**. The user should need to look at the image to determine if greenery is present.)
-    *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
-    *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
-    *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
    
 
     **Output Format:**
@@ -231,7 +224,7 @@ def prompt_text(n=2):
     E) [Option 5]
     F) [Option 6]
     CORRECT_ANSWER: [A, B, C, D, E, or F]
-    REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. Mention which of the  options is the absurdum clearly false]
+    REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. 
     TOPIC: [Short explanation of why you chose this topic from **Topics for Question Generation:**, especially why it is relevant for this image]
 
 
@@ -244,7 +237,15 @@ def prompt_text(n=2):
 
     This improved question requires the viewer to look for multiple visual clues  and interpret them, instead of  merely identifying a single object.
 
+    
+    **Constraints:**
 
+    *   **Directly Observable:** The question and its answer choices MUST be answerable solely from the information visible in the provided image. Do not make assumptions or introduce information not directly observable.
+    *   **Image-Dependent Questions:** Questions should be crafted so that they cannot be answered correctly by only reading the answer choices and without examining the image. The image must be essential to determining the correct answer. (For example, avoid questions where only one answer choice mentions "greenery" if the focus area is **Sustainability**. The user should need to look at the image to determine if greenery is present.)
+    *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
+    *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
+    *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
+   
       """
 
     return prompt
