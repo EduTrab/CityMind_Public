@@ -363,7 +363,7 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
                     3. **Trim verbosity**—make the question concise, precise, and intellectually engaging without being over-complicated.
 
                     Return only the refined, formatted text.
-                    """
+                    """,
                     model=current_model
                 )
                 if not model_response:
