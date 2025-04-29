@@ -41,6 +41,7 @@ def save_and_move_image(record):
     shutil.move(image_path, answered_img)
 
     # Async upload
+    print(f"[DEBUG] Username: {st.session_state.get('username')}") 
     user_id = st.session_state.get("username", st.session_state.get("session_id", "unknown"))
     async_upload_record({"image_path": answered_img, "json_path": answered_json}, user_id)
 
