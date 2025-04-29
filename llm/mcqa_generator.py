@@ -204,9 +204,13 @@ def prompt_text(n=2):
     Your question should focus on aspects observable in the image that relate to key concepts in urban analysis, such as:
     {concatenated_topics}
 
+
     **Example of Depth**:
     Poor Example (Superficial):
     "Does this image show any cars?" — Answers would be trivially observable, testing minimal reasoning.
+
+    Better Example (Cognitively Deeper):
+    "Which of the following best describes how (part of the scene) is (aspect of that part to understand) , considering ...?"
 
     
     This improved question requires the viewer to look for multiple visual clues  and interpret them, instead of  merely identifying a single object.
@@ -236,8 +240,6 @@ def prompt_text(n=2):
 
     return prompt
 
-#Better Example (Cognitively Deeper):
-#   "Which of the following best describes how (part of the scene) is (aspect of that part to understand) , considering ...?"
 
 # *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
 def generate_city_perturbations(base_lat, base_lon, n, radius_km=1.0):
