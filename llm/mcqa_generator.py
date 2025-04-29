@@ -362,6 +362,27 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
                     * Highlight critical words with the custom syntax `:red[important text]`.  
                     3. **Trim verbosity**—make the question concise, precise, and intellectually engaging without being over-complicated.
 
+                     **Constraints:**
+
+                    *   **Directly Observable:** The question and its answer choices MUST be answerable solely from the information visible in the provided image. Do not make assumptions or introduce information not directly observable.
+                    *   **Image-Dependent Questions:** Questions should be crafted so that they cannot be answered correctly by only reading the answer choices and without examining the image. The image must be essential to determining the correct answer. (For example, avoid questions where only one answer choice mentions "greenery" if the focus area is **Sustainability**. The user should need to look at the image to determine if greenery is present.)
+                    *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
+                    *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
+
+                    **Output Format:**
+
+                    QUESTION: [Your question text]
+                    A) [Option 1]
+                    B) [Option 2]
+                    C) [Option 3]
+                    D) [Option 4]
+                    E) [Option 5]
+                    F) [Option 6]
+                    CORRECT_ANSWER: [A, B, C, D, E, or F]
+                    REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. 
+                    TOPIC: [Short explanation of why you chose this topic from **Topics for Question Generation:**, especially why it is relevant for this image]
+
+
                     Return only the refined, formatted text.
                     """,
                     model=current_model
