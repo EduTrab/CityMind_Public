@@ -208,8 +208,9 @@ def prompt_text(n=2):
     The Correct answer must corresponding to letter ({correct_answer_letter}).
 
     **Topics for Question Generation:**
-    Your question should focus on aspects observable in the image that relate to key concepts in urban analysis and observation.
-    
+    Your question should focus on aspects observable in the image that relate to key concepts in urban analysis, such as:
+    {concatenated_topics}
+
     **Example of Depth**:
     Poor Example (Superficial):
     "Does this image show any cars?" — Answers would be trivially observable, testing minimal reasoning.
