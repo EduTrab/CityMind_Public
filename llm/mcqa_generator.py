@@ -227,7 +227,6 @@ def prompt_text(n=2):
     *   **Image-Dependent Questions:** Questions should be crafted so that they cannot be answered correctly by only reading the answer choices and without examining the image. The image must be essential to determining the correct answer. (For example, avoid questions where only one answer choice mentions "greenery" if the focus area is **Sustainability**. The user should need to look at the image to determine if greenery is present.)
     *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
     *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
-    *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
 
     **Output Format:**
 
@@ -346,6 +345,25 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
                 model_response = llm_server.send_query(
                     image_path=img,
                     prompt=prompt_text(),
+                    model=current_model
+                )
+                model_response = llm_server.send_query(
+                    image_path=img,
+                    prompt = f"""
+                    # TASK  
+                    You are given the following model output describing an image:
+
+                    {model_response}
+
+                    ## Objectives  
+                    1. **Refine** the text so it is strictly relevant to the image.  
+                    2. **Format** the result with Markdown for easy skimming:  
+                    * Use headings, lists, or short paragraphs.  
+                    * Highlight critical words with the custom syntax `:red[important text]`.  
+                    3. **Trim verbosity**—make the question concise, precise, and intellectually engaging without being over-complicated.
+
+                    Return only the refined, formatted text.
+                    """
                     model=current_model
                 )
                 if not model_response:
