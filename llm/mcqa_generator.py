@@ -65,13 +65,6 @@ def prompt_text(n=2):
         - **Avoid**: attributing intent, emotion, or future actions not visually grounded.
     """,
     """
-    * **Visual Reasoning**:
-        - **Core question**: “Why/How is something happening here?”
-        - **Analyse**: combine visible evidence with common-sense or world knowledge (e.g., rain → umbrellas).
-        - **Consider**: temporal logic, cultural practices, physical plausibility.
-        - **Avoid**: speculative storytelling beyond testable visual-logical inference.
-    """,
-    """
     * **Density and Variability**:
         - **Core question**: “How many and how diverse are the elements present?”
         - **Analyse**: Consider people/vehicles/structures, qualitative heterogeneity of types and styles.
