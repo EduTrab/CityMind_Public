@@ -211,23 +211,6 @@ def prompt_text(n=2):
     Your question should focus on aspects observable in the image that relate to key concepts in urban analysis, such as:
     {concatenated_topics}
 
-
-   
-
-    **Output Format:**
-
-    QUESTION: [Your question text]
-    A) [Option 1]
-    B) [Option 2]
-    C) [Option 3]
-    D) [Option 4]
-    E) [Option 5]
-    F) [Option 6]
-    CORRECT_ANSWER: [A, B, C, D, E, or F]
-    REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. 
-    TOPIC: [Short explanation of why you chose this topic from **Topics for Question Generation:**, especially why it is relevant for this image]
-
-
     **Example of Depth**:
     Poor Example (Superficial):
     "Does this image show any cars?" — Answers would be trivially observable, testing minimal reasoning.
@@ -246,6 +229,19 @@ def prompt_text(n=2):
     *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
     *   **Clear Markdown Formatting:** Format your text using markdown to higlight the most important words of your question, and guide the user to navigate the text. Format using bold and color red  ":red[text to highlight]". 
    
+    **Output Format:**
+
+    QUESTION: [Your question text]
+    A) [Option 1]
+    B) [Option 2]
+    C) [Option 3]
+    D) [Option 4]
+    E) [Option 5]
+    F) [Option 6]
+    CORRECT_ANSWER: [A, B, C, D, E, or F]
+    REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. 
+    TOPIC: [Short explanation of why you chose this topic from **Topics for Question Generation:**, especially why it is relevant for this image]
+
       """
 
     return prompt
