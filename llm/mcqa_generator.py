@@ -177,13 +177,6 @@ def prompt_text(n=2):
         - **Avoid**: legal interpretation; stick to visible compliance indicators.
     """,
     """
-    * **Temporality and Change**:
-        - **Core question**: “What suggests the time of day, season, or ongoing change?”
-        - **Analyse**: shadows, attire, foliage, construction equipment, pop-up structures.
-        - **Consider**: cyclical vs. one-off changes (holiday decor vs. redevelopment).
-        - **Avoid**: conflating age of buildings with neglect without maintenance evidence.
-    """,
-    """
     * **Materiality and Texture**:
         - **Core question**: “What materials and surface qualities define the scene?”
         - **Analyse**: masonry vs. glass vs. wood, pavement texture, patina, reflectivity.
