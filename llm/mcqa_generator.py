@@ -3,7 +3,7 @@ import random
 import streamlit as st
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from utils.common.index_utils import get_next_idx
-from utils.streetview.fetch import search_and_download_random
+from utils.streetview.fetch import search_and_download_random_maps, search_and_download_random_mly
 
 
 
@@ -284,7 +284,7 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
         with st.spinner("Downloading images..."):
             with ThreadPoolExecutor() as executor:
                 futures = [
-                    executor.submit(search_and_download_random, start_idx + i, coords=coords_list[i] if coords_list else None)
+                    executor.submit(search_and_download_random_mly, start_idx + i, coords=coords_list[i] if coords_list else None)
                     for i in range(batch_size)
                 ]
                 for future in as_completed(futures):
