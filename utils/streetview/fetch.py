@@ -95,7 +95,7 @@ def _get(url: str, max_retries: int, headers: dict | None = None, stream: bool =
 # -----------------------------------------------------------------------------
 # Public API
 # -----------------------------------------------------------------------------
-
+import random
 def  search_and_download_random_mly(
     indx: int =None, # for compatibility
     coords: Tuple[float, float] | None = None,
@@ -137,6 +137,12 @@ def  search_and_download_random_mly(
         lat, lon = coords
     else:
         lat, lon = random_location()
+
+    lat_shift = random.uniform(-0.001, 0.001)  # Adjust the range as needed
+    lon_shift = random.uniform(-0.001, 0.001)  # Adjust the range as needed
+
+    lat += lat_shift
+    lon += lon_shift
 
     # ------------------------------------------------------------------
     # 1. Compute bounding‑box around the search circle (fast tile lookup)
