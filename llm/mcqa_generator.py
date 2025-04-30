@@ -150,51 +150,95 @@ def prompt_text(n=2):
 
 
 
-    prompt=f"""
-    Role: You are an advanced AI model. Your task is to analyze a Street View image (provided separately) and generate a thought-provoking, cognitively challenging question that tests higher-order reasoning about the image.
+    prompt = f"""ROLE
+    You are a senior “visual-question author” for an urban-analytics dataset.
+    You see one Street-View image at a time and must write an exam-level
+    multiple-choice question that can be answered solely from that image.
 
-    **Input:** A Street View image (provided separately).
+    INPUTS
+    • image   : one Street-View panorama (separately supplied)  
+    • topics  : {concatenated_topics}  
+    • letter  : {correct_answer_letter}   ← the answer choice that must be correct
 
-    **Task:** Examine the provided Street View image meticulously. Based on your observations of the image alone, generate **one** challenging, closed-ended question relevant to one of the following topics, with **exactly six** answers (labeled A, B, C, D, E, and F), 1 true and 5 possibles but objectivly false for the given picture .
-    The Correct answer must corresponding to letter ({correct_answer_letter}).
+    TASK
+    1. Build a precise mental scene graph (objects, counts, positions, relations).  
+    2. Pick **one** suitable domain from *topics* that the image illustrates well.  
+    3. Write **one** challenging, closed-ended question on that domain that
+    *requires* careful visual inspection and light reasoning.  
+    4. Supply **exactly six** answer choices (A-F) — one true (whose letter == *letter*),
+    five convincingly false **for this image**.  
+    5. Provide concise reasoning: why the correct option is true and each
+    other option is false, citing concrete visual cues.
 
-    **Topics for Question Generation:**
-    Your question should focus on aspects observable in the image that relate to key concepts in urban analysis, such as:
-    {concatenated_topics}
+    QUALITY BAR  
+    ✓ Image-dependent – cannot be answered without looking at the photo.  
+    ✓ Unambiguous – only one letter fits the evidence.  
+    ✓ Non-trivial – deeper than object spotting (“Is there a car?”).  
+    ✓ Concise – ≤ 2 short sentences per field.
 
+    OUTPUT (MUST be valid JSON, one key per line, no extra keys)
 
-    **Example of Depth**:
-    Poor Example (Superficial):
-    "Does this image show any cars?" — Answers would be trivially observable, testing minimal reasoning.
+    {{
+    "question"        : "<single interrogative sentence>",
+    "A"               : "<answer text>",
+    "B"               : "<answer text>",
+    "C"               : "<answer text>",
+    "D"               : "<answer text>",
+    "E"               : "<answer text>",
+    "F"               : "<answer text>",
+    "correct_answer"  : "<A|B|C|D|E|F>",      ← must equal {correct_answer_letter}
+    "reasoning"       : "<why correct & why others wrong (≤150 chars)>",
+    "topic_chosen"    : "<one topic from list & why it fits (≤60 chars)>"
+    }}
 
-    Better Example (Cognitively Deeper):
-    "Which of the following best describes how (part of the scene) is (aspect of that part to understand) , considering ...?"
+    EXAMPLES
+    ---------  (notice how only the image reveals the correct option)
 
-    
-    This improved question requires the viewer to look for multiple visual clues  and interpret them, instead of  merely identifying a single object.
+    Example 1
+    {{
+    "question"        : "Which side of the street has the bus stop shelter?",
+    "A"               : "North side",
+    "B"               : "South side",
+    "C"               : "East side",
+    "D"               : "West side",
+    "E"               : "Both sides",
+    "F"               : "No bus stop visible",
+    "correct_answer"  : "B",
+    "reasoning"       : "Blue shelter and bus-stop pole clearly stand on the south pavement; nowhere else.",
+    "topic_chosen"    : "Transit accessibility – stop placement"
+    }}
 
-    
-    **Constraints:**
+    Example 2
+    {{
+    "question"        : "What obstructs the dedicated cycle lane closest to the camera?",
+    "A"               : "A parked van",
+    "B"               : "Rubbish bins",
+    "C"               : "Outdoor café tables",
+    "D"               : "Road-works cones",
+    "E"               : "Nothing – it is clear",
+    "F"               : "Police barrier tape",
+    "correct_answer"  : "A",
+    "reasoning"       : "A white delivery van is parked fully over the painted green cycle lane; no cones, bins or tables present.",
+    "topic_chosen"    : "Active mobility – cycle-lane blockage"
+    }}
 
-    *   **Directly Observable:** The question and its answer choices MUST be answerable solely from the information visible in the provided image. Do not make assumptions or introduce information not directly observable.
-    *   **Image-Dependent Questions:** Questions should be crafted so that they cannot be answered correctly by only reading the answer choices and without examining the image. The image must be essential to determining the correct answer. (For example, avoid questions where only one answer choice mentions "greenery" if the focus area is **Sustainability**. The user should need to look at the image to determine if greenery is present.)
-    *   **Unambiguous Correct Answer:** Only one answer choice should be definitively correct based on the image.
-    *   **Clear Reasoning:** Briefly explain why the chosen answer is the correct one, referencing specific elements in the image that support your reasoning. Also, briefly explain why the other options are incorrect.
-    *   **Not Over Verbose** Pose Challenging question and answers, without being too verbose.
-    **Output Format:**
+    Example 3
+    {{
+    "question"        : "Which building material dominates the façades on the left side?",
+    "A"               : "Red brick",
+    "B"               : "Exposed concrete",
+    "C"               : "Glass curtain-wall",
+    "D"               : "Timber cladding",
+    "E"               : "Polished granite",
+    "F"               : "White stucco",
+    "correct_answer"  : "C",
+    "reasoning"       : "Left row is a continuous glass-clad office block; no brick, timber, granite or stucco visible.",
+    "topic_chosen"    : "Architectural style – façade materials"
+    }}
 
-    QUESTION: [Your question text]
-    A) [Option 1]
-    B) [Option 2]
-    C) [Option 3]
-    D) [Option 4]
-    E) [Option 5]
-    F) [Option 6]
-    CORRECT_ANSWER: [A, B, C, D, E, or F]
-    REASON: [Short explanation of why the answer is correct, referencing specific visual elements in the image. Also, a short explanation of why the other options are false. 
-    TOPIC: [Short explanation of why you chose this topic from **Topics for Question Generation:**, especially why it is relevant for this image]
+    Do **NOT** output anything except the final JSON block for the new image.
+    """
 
-      """
 
     return prompt
 
