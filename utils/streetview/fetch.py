@@ -96,12 +96,12 @@ def _get(url: str, max_retries: int, headers: dict | None = None, stream: bool =
 # Public API
 # -----------------------------------------------------------------------------
 
-def  search_and_download_random_mly(
-    pano_id: int =None, # for compatibility
+def search_and_download_random_mly(
+    pano_id: int = None,# for compatibility
     coords: Tuple[float, float] | None = None,
     max_retries: int = 3,
-    radius_m: float=1000,
-    access_token: str = st.secrets.get("mapillary_access_token", ""),
+    radius_m: float = 1000,
+    access_token: str = None,  # Default is None → set inside function
     out_dir: str = SAVE_DIR,
     zoom: int = 14,
     tile_coverage: str = "mly1_public",
@@ -132,6 +132,11 @@ def  search_and_download_random_mly(
     RuntimeError
         If no imagery is found inside the requested circle.
     """
+    # ✅ Load secret inside the function
+    if access_token is None:
+        access_token = st.secrets.get("mapillary_access_token", "")
+        if not access_token:
+            raise RuntimeError("Mapillary access token is missing from Streamlit secrets.")
 
     if coords:
         lat, lon = coords
@@ -141,15 +146,14 @@ def  search_and_download_random_mly(
     # ------------------------------------------------------------------
     # 1. Compute bounding‑box around the search circle (fast tile lookup)
     # ------------------------------------------------------------------
-    deg_per_m_lat = 1.0 / 111_320  # ° per metre (lat)
-    deg_per_m_lon = 1.0 / (111_320 * cos(radians(lat)))  # varies by latitude
+    deg_per_m_lat = 1.0 / 111_320 # ° per metre (lat)
+    deg_per_m_lon = 1.0 / (111_320 * cos(radians(lat))) # varies by latitude
 
     dlat = radius_m * deg_per_m_lat
     dlon = radius_m * deg_per_m_lon
 
     west, south, east, north = lon - dlon, lat - dlat, lon + dlon, lat + dlat
     tiles = list(mercantile.tiles(west, south, east, north, zoom))
-
     os.makedirs(out_dir, exist_ok=True)
 
     for tile in tiles:
@@ -157,6 +161,8 @@ def  search_and_download_random_mly(
             f"https://tiles.mapillary.com/maps/vtp/{tile_coverage}/2/"
             f"{tile.z}/{tile.x}/{tile.y}?access_token={access_token}"
         )
+        print(f"[DEBUG] Requesting tile: {tile_url[:80]}...")
+
         vt_bytes = _get(tile_url, max_retries).content
         geojson = vt_bytes_to_geojson(
             vt_bytes, tile.x, tile.y, tile.z, layer=tile_layer
@@ -165,11 +171,10 @@ def  search_and_download_random_mly(
         for feature in geojson["features"]:
             lng, lat_f = feature["geometry"]["coordinates"]
             if _haversine_m(lat, lon, lat_f, lng) > radius_m:
-                continue  # outside circle
+                continue # outside circle
 
             # ---------- we've got our first match → download + save ----------
             image_id = feature["properties"]["id"]
-
             fields = "thumb_2048_url,computed_geometry,captured_at"
             graph_url = f"https://graph.mapillary.com/{image_id}?fields={fields}"
             headers = {"Authorization": f"OAuth {access_token}"}
@@ -189,7 +194,8 @@ def  search_and_download_random_mly(
             json_path = os.path.join(out_dir, f"{pano_id}.json")
             with open(json_path, "w", encoding="utf-8") as fp:
                 json.dump(
-                    {   "pano_id": pano_id,
+                    {
+                        "pano_id": pano_id,
                         "location": {"lat": lat_meta, "lng": lng_meta},
                         "date": meta.get("captured_at"),
                     },
@@ -197,8 +203,7 @@ def  search_and_download_random_mly(
                     ensure_ascii=False,
                     indent=4,
                 )
-
-            return  image_path, json_path  # ← RETURN ONLY ONE IMAGE / META
+            return image_path, json_path # ← RETURN ONLY ONE IMAGE / META
 
     # loop exited → no image found
     raise RuntimeError("No Mapillary imagery found within the specified radius.")
