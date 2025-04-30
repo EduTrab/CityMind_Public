@@ -172,7 +172,12 @@ class MultiLLMService:
             raise ValueError("Please insert your Google Gemini API key for Gemini-Reasining.")
         try:
             image = Image.open(image_path)
-            model_instance = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
+            # Resize image to have width of 512 pixels while maintaining aspect ratio
+            width, height = image.size
+            new_width = 512
+            new_height = int((new_width / width) * height)
+            image = image.resize((new_width, new_height))
+            model_instance = genai.GenerativeModel(model)
             response = model_instance.generate_content([prompt, image])
             return response.text
         except Exception as e:
