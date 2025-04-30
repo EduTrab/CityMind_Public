@@ -98,7 +98,7 @@ def _get(url: str, max_retries: int, headers: dict | None = None, stream: bool =
 
 def  search_and_download_random_mly(
     pano_id: int =None, # for compatibility
-    coords: Tuple[float, float] = [0.0,0.0],
+    coords: Tuple[float, float] | None = None,
     max_retries: int = 3,
     radius_m: float=1000,
     access_token: str="MLY|23937335652558993|eb49143137817a491c1f5257340cd217" ,
@@ -133,7 +133,10 @@ def  search_and_download_random_mly(
         If no imagery is found inside the requested circle.
     """
 
-    lat, lon = coords
+    if coords:
+        lat, lon = coords
+    else:
+        lat, lon = random_location()
 
     # ------------------------------------------------------------------
     # 1. Compute bounding‑box around the search circle (fast tile lookup)
