@@ -9,8 +9,10 @@ def render_question_card(record, i):
     qmode = record["question_mode"]
 
     if os.path.exists(image_path):
+        img = Image.open(image_path)
+        img = img.resize((800, 600), Image.LANCZOS)
         st.image(
-            Image.open(image_path),
+            img,
             caption=f"Image #{os.path.basename(image_path)}",
             use_container_width=True
         )
