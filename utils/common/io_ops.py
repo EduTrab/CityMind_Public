@@ -45,12 +45,12 @@ def save_and_move_image(record):
     user_id = st.session_state.get("username", st.session_state.get("session_id", "unknown"))
     async_upload_record({"image_path": answered_img, "json_path": answered_json}, user_id)
 
-    # # Local cleanup
-    # for folder in SAVE_DIRS:
-    #     for path in [os.path.join(folder, os.path.basename(image_path)), os.path.join(folder, os.path.basename(json_path))]:
-    #         if os.path.exists(path):
-    #             try:
-    #                 os.remove(path)
-    #                 print(f"[Cleanup] Removed duplicate: {path}")
-    #             except Exception as e:
-    #                 print(f"[Warning] Could not delete {path}: {e}")
+    # Local cleanup
+    for folder in SAVE_DIRS:
+        for path in [os.path.join(folder, os.path.basename(image_path)), os.path.join(folder, os.path.basename(json_path))]:
+            if os.path.exists(path):
+                try:
+                    os.remove(path)
+                    print(f"[Cleanup] Removed duplicate: {path}")
+                except Exception as e:
+                    print(f"[Warning] Could not delete {path}: {e}")
