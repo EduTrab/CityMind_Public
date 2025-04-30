@@ -15,8 +15,6 @@ def render_question_card(record, i):
             caption=f"Image #{os.path.basename(image_path)}",
             use_container_width=True
         )
-    else:
-        st.markdown(f"Error during image loading, image path=",image_path )
 
 
     if qmode == "llm_mcqa":
