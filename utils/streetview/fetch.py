@@ -178,7 +178,7 @@ def  search_and_download_random_mly(
             lng_meta, lat_meta = meta["computed_geometry"]["coordinates"]
 
             # download JPEG
-            image_path = os.path.join(out_dir, f"{image_id}.jpg")
+            image_path = os.path.join(out_dir, f"{pano_id}.jpg")
             img_resp = _get(meta["thumb_2048_url"], max_retries, stream=True)
             with open(image_path, "wb") as fp:
                 for chunk in img_resp.iter_content(chunk_size=64 * 1024):
