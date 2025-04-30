@@ -100,7 +100,7 @@ def  search_and_download_random_mly(
     pano_id: int =None, # for compatibility
     coords: Tuple[float, float] | None = None,
     max_retries: int = 3,
-    radius_m: float=10000,
+    radius_m: float=1000,
     access_token: str="MLY|23937335652558993|eb49143137817a491c1f5257340cd217" ,
     out_dir: str = SAVE_DIR,
     zoom: int = 14,
