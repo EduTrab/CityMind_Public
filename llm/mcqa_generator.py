@@ -152,92 +152,78 @@ def prompt_text(n=2):
 
     prompt = f"""ROLE
     You are a senior “visual-question author” for an urban-analytics dataset.
-    You see one Street-View image at a time and must write an exam-level
-    multiple-choice question that can be answered solely from that image.
+    You will see **one** Street-View image and must write **one** challenging
+    multiple-choice question that can be answered *only* by inspecting that image.
 
     INPUTS
-    • image   : one Street-View panorama (separately supplied)  
+    • image   : a Street-View panorama (supplied separately)  
     • topics  : {concatenated_topics}  
-    • letter  : {correct_answer_letter}   ← the answer choice that must be correct
+    • letter  : {correct_answer_letter}   ← the option that MUST be correct
 
     TASK
     1. Build a precise mental scene graph (objects, counts, positions, relations).  
-    2. Pick **one** suitable domain from *topics* that the image illustrates well.  
-    3. Write **one** challenging, closed-ended question on that domain that
-    *requires* careful visual inspection and light reasoning.  
-    4. Supply **exactly six** answer choices (A-F) — one true (whose letter == *letter*),
-    five convincingly false **for this image**.  
-    5. Provide concise reasoning: why the correct option is true and each
-    other option is false, citing concrete visual cues.
+    2. Choose **one** suitable domain from *topics*.  
+    3. Craft a closed-ended question that demands careful visual reasoning.  
+    4. Write **exactly six** answer choices (A–F): **one** true (its letter == *letter*),
+    **five** clearly false for this image.  
+    5. Add a brief reason: why the true option is correct and each other is false,
+    citing concrete visual cues.
 
     QUALITY BAR  
-    ✓ Image-dependent – cannot be answered without looking at the photo.  
-    ✓ Unambiguous – only one letter fits the evidence.  
-    ✓ Non-trivial – deeper than object spotting (“Is there a car?”).  
+    ✓ Image-dependent – cannot be answered without the photo.  
+    ✓ Unambiguous – only one option fits.  
+    ✓ Non-trivial – deeper than “Is there a car?”.  
     ✓ Concise – ≤ 2 short sentences per field.
 
-    OUTPUT (MUST be valid JSON, one key per line, no extra keys)
+    OUTPUT FORMAT  (write nothing else!)
 
-    {{
-    "question"        : "<single interrogative sentence>",
-    "A"               : "<answer text>",
-    "B"               : "<answer text>",
-    "C"               : "<answer text>",
-    "D"               : "<answer text>",
-    "E"               : "<answer text>",
-    "F"               : "<answer text>",
-    "correct_answer"  : "<A|B|C|D|E|F>",      ← must equal {correct_answer_letter}
-    "reasoning"       : "<why correct & why others wrong (≤150 chars)>",
-    "topic_chosen"    : "<one topic from list & why it fits (≤60 chars)>"
-    }}
+    QUESTION: <one interrogative sentence>
+    A) <answer text>
+    B) <answer text>
+    C) <answer text>
+    D) <answer text>
+    E) <answer text>
+    F) <answer text>
+    CORRECT_ANSWER: <A|B|C|D|E|F>      ← must equal {correct_answer_letter}
+    REASON: <why correct; why others wrong – reference specific visual cues>
+    TOPIC: <chosen topic from list + why it fits>
 
-    EXAMPLES
-    ---------  (notice how only the image reveals the correct option)
+    EXAMPLES  (observe the exact layout)
 
-    Example 1
-    {{
-    "question"        : "Which side of the street has the bus stop shelter?",
-    "A"               : "North side",
-    "B"               : "South side",
-    "C"               : "East side",
-    "D"               : "West side",
-    "E"               : "Both sides",
-    "F"               : "No bus stop visible",
-    "correct_answer"  : "B",
-    "reasoning"       : "Blue shelter and bus-stop pole clearly stand on the south pavement; nowhere else.",
-    "topic_chosen"    : "Transit accessibility – stop placement"
-    }}
+    QUESTION: Which side of the street features the only visible bus-stop shelter?
+    A) North side
+    B) South side
+    C) East side
+    D) West side
+    E) Both sides
+    F) No bus-stop visible
+    CORRECT_ANSWER: B
+    REASON: A blue shelter and bus-stop pole stand on the south pavement; no shelter elsewhere.
+    TOPIC: Transit accessibility – stop placement
 
-    Example 2
-    {{
-    "question"        : "What obstructs the dedicated cycle lane closest to the camera?",
-    "A"               : "A parked van",
-    "B"               : "Rubbish bins",
-    "C"               : "Outdoor café tables",
-    "D"               : "Road-works cones",
-    "E"               : "Nothing – it is clear",
-    "F"               : "Police barrier tape",
-    "correct_answer"  : "A",
-    "reasoning"       : "A white delivery van is parked fully over the painted green cycle lane; no cones, bins or tables present.",
-    "topic_chosen"    : "Active mobility – cycle-lane blockage"
-    }}
+    QUESTION: What obstructs the dedicated cycle lane closest to the camera?
+    A) A parked van
+    B) Rubbish bins
+    C) Outdoor café tables
+    D) Road-works cones
+    E) Nothing – it is clear
+    F) Police barrier tape
+    CORRECT_ANSWER: A
+    REASON: A white delivery van is parked fully over the green cycle lane; no bins, cones or tape present.
+    TOPIC: Active mobility – cycle-lane blockage
 
-    Example 3
-    {{
-    "question"        : "Which building material dominates the façades on the left side?",
-    "A"               : "Red brick",
-    "B"               : "Exposed concrete",
-    "C"               : "Glass curtain-wall",
-    "D"               : "Timber cladding",
-    "E"               : "Polished granite",
-    "F"               : "White stucco",
-    "correct_answer"  : "C",
-    "reasoning"       : "Left row is a continuous glass-clad office block; no brick, timber, granite or stucco visible.",
-    "topic_chosen"    : "Architectural style – façade materials"
-    }}
-
-    Do **NOT** output anything except the final JSON block for the new image.
+    QUESTION: Which building material dominates the façades on the left side?
+    A) Red brick
+    B) Exposed concrete
+    C) Glass curtain-wall
+    D) Timber cladding
+    E) Polished granite
+    F) White stucco
+    CORRECT_ANSWER: C
+    REASON: The left row is a continuous glass-clad office block; other materials are absent.
+    TOPIC: Architectural style – façade materials
     """
+
 
 
     return prompt
