@@ -284,7 +284,7 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
         with st.spinner("Downloading images..."):
             with ThreadPoolExecutor() as executor:
                 futures = [
-                    executor.submit(search_and_download_random_mly, start_idx + i, coords=coords_list[i] if coords_list else None)
+                    executor.submit(search_and_download_random_maps, start_idx + i, coords=coords_list[i] if coords_list else None)
                     for i in range(batch_size)
                 ]
                 for future in as_completed(futures):
@@ -332,7 +332,7 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
 
                 model_response = llm_server.send_query(
                     image_path=img,
-                    prompt=prompt_text(n=10),
+                    prompt=prompt_text(n=2),
                     model=current_model
                 )
                 # model_response = llm_server.send_query(
