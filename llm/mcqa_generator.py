@@ -316,9 +316,27 @@ def prompt_text(n=2):
     """
     ]
 
+    topics_high_level = [
+    "Density & Variability – assess how diverse or crowded the visible elements are (people, vehicles, buildings) using relative terms rather than exact counts.",
+    "Land-Use & Built Form – identify land-use types and structural cues from façades, signage, and form, without guessing legal zoning.",
+    "Public-Space Use & Social Interaction – observe how people occupy and interact within shared outdoor spaces (posture, grouping, furniture).",
+    "Gathering-Space Typology – classify the kind of public space (plaza, park, corridor, etc.) based on enclosure, activity, and fixtures.",
+    "Safety & Perceived Safety – note features that influence perceived safety such as lighting, visibility, active frontages, and upkeep.",
+    "Culture & Identity – recognise cultural markers (murals, flags, language, vernacular materials) that express local identity.",
+    "Atmosphere & Urban Dynamics – gauge the overall vibe or energy level from pedestrian flow, activity intensity, and ambient cues.",
+    "Livability & Comfort – look for comfort-enhancing amenities like shade, seating, greenery, and general maintenance quality.",
+    "Transport & Mobility – detect present travel modes and infrastructures (sidewalks, bike lanes, bus stops, parking).",
+    "Urban Design & Aesthetics – describe formal and aesthetic qualities such as façade rhythm, material palette, and signage coherence.",
+    "Economic Activity – spot visible signs of commerce and vitality (open shops, street vendors, advertising density, vacancies).",
+    "Sustainability & Environment – observe sustainable features or concerns (tree canopy, green roofs, bike infra, litter, smoke).",
+    "Accessibility & Inclusivity – identify visible affordances that support diverse abilities (ramps, tactile strips, inclusive signage).",
+    "Regulation & Planning Cues – note any observable planning or regulatory indicators (permit boards, zoning notices, traffic calming).",
+    "Materiality & Texture – describe the dominant materials and surface textures in buildings and pavements (masonry, glass, timber, patina)."
+]
 
 
-    sampled_topics = random.sample(topics, n)
+
+    sampled_topics = random.sample(topics_high_level, n)
     concatenated_topics = "\n".join(sampled_topics)
 
 
