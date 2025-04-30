@@ -332,7 +332,7 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
 
                 model_response = llm_server.send_query(
                     image_path=img,
-                    prompt=prompt_text(),
+                    prompt=prompt_text(n=10),
                     model=current_model
                 )
                 # model_response = llm_server.send_query(
