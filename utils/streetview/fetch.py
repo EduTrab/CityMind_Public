@@ -178,7 +178,7 @@ def  search_and_download_random_mly(
             lng_meta, lat_meta = meta["computed_geometry"]["coordinates"]
 
             # download JPEG
-            image_path = os.path.join(out_dir, f"{pano_id}.jpg")
+            image_path = os.path.join(out_dir, f"{image_id}.jpg")
             img_resp = _get(meta["thumb_2048_url"], max_retries, stream=True)
             with open(image_path, "wb") as fp:
                 for chunk in img_resp.iter_content(chunk_size=64 * 1024):
@@ -189,13 +189,13 @@ def  search_and_download_random_mly(
             json_path = os.path.join(out_dir, f"{pano_id}.json")
             with open(json_path, "w", encoding="utf-8") as fp:
                 json.dump(
-                    {
+                    {   "pano_id": pano_id,
                         "location": {"lat": lat_meta, "lng": lng_meta},
                         "date": meta.get("captured_at"),
                     },
                     fp,
                     ensure_ascii=False,
-                    indent=2,
+                    indent=4,
                 )
 
             return json_path, image_path  # ← RETURN ONLY ONE IMAGE / META
