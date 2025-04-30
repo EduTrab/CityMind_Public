@@ -100,9 +100,9 @@ def  search_and_download_random_mly(
     pano_id: int =None, # for compatibility
     coords: Tuple[float, float] | None = None,
     max_retries: int = 3,
-    radius_m: float=1000,
+    radius_m: float=10000,
     access_token: str="MLY|23937335652558993|eb49143137817a491c1f5257340cd217" ,
-    out_dir: str = "./mapillary_download",
+    out_dir: str = SAVE_DIR,
     zoom: int = 14,
     tile_coverage: str = "mly1_public",
     tile_layer: str = "image",
@@ -178,7 +178,7 @@ def  search_and_download_random_mly(
             lng_meta, lat_meta = meta["computed_geometry"]["coordinates"]
 
             # download JPEG
-            image_path = os.path.join(out_dir, f"{image_id}.jpg")
+            image_path = os.path.join(out_dir, f"{pano_id}.jpg")
             img_resp = _get(meta["thumb_2048_url"], max_retries, stream=True)
             with open(image_path, "wb") as fp:
                 for chunk in img_resp.iter_content(chunk_size=64 * 1024):
@@ -186,7 +186,7 @@ def  search_and_download_random_mly(
                         fp.write(chunk)
 
             # write JSON metadata
-            json_path = os.path.join(out_dir, f"{image_id}.json")
+            json_path = os.path.join(out_dir, f"{pano_id}.json")
             with open(json_path, "w", encoding="utf-8") as fp:
                 json.dump(
                     {
