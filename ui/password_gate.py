@@ -7,7 +7,7 @@ def check_password():
     if st.session_state.authenticated:
         return True
 
-    st.title("🔐 CityMind Access 1.1")
+    st.title("🔐 CityMind Access 1.3")
     
     st.write("Please authenticate using your username formatted as name_surname_birthyear")
     
