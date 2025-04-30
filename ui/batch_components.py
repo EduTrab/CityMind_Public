@@ -13,7 +13,7 @@ def render_question_card(record, i):
         st.image(
             img,
             caption=f"Image #{os.path.basename(image_path)}",
-            use_container_width=True
+            #use_container_width=True
         )
 
 
