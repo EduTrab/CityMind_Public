@@ -13,5 +13,4 @@ transformers==4.48.2
 streetview
 ollama==0.4.7
 google-generativeai
-t2geojsonimport 
-vt_bytes_to_geojson
+t2geojson
