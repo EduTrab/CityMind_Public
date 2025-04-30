@@ -10,7 +10,6 @@ def render_question_card(record, i):
 
     if os.path.exists(image_path):
         img = Image.open(image_path)
-        img = img.resize((800, 600), Image.LANCZOS)
         st.image(
             img,
             caption=f"Image #{os.path.basename(image_path)}",

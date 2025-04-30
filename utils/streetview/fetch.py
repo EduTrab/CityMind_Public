@@ -150,7 +150,7 @@ def  search_and_download_random_mly(
     west, south, east, north = lon - dlon, lat - dlat, lon + dlon, lat + dlat
     tiles = list(mercantile.tiles(west, south, east, north, zoom))
 
-    os.makedirs(out_dir, exist_ok=True)
+    #os.makedirs(out_dir, exist_ok=True)
 
     for tile in tiles:
         tile_url = (
