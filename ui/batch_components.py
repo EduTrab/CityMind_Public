@@ -9,7 +9,6 @@ def render_question_card(record, i):
     qmode = record["question_mode"]
 
     if os.path.exists(image_path):
-        st.markdown(f"Image")
         img = Image.open(image_path)
         st.image(
             img,
