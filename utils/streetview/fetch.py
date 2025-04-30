@@ -138,8 +138,8 @@ def  search_and_download_random_mly(
     else:
         lat, lon = random_location()
 
-    lat_shift = random.uniform(-0.001, 0.001)  # Adjust the range as needed
-    lon_shift = random.uniform(-0.001, 0.001)  # Adjust the range as needed
+    lat_shift = random.uniform(-0.01, 0.01)  # Adjust the range as needed
+    lon_shift = random.uniform(-0.01, 0.01)  # Adjust the range as needed
 
     lat += lat_shift
     lon += lon_shift
