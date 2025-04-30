@@ -28,120 +28,294 @@ def prompt_text(n=2):
     absurdum_answer_letter=number_to_letter[absurdum_answer_number]
 
 
+
+# Combined catalogue: every topic immediately followed by ONE illustrative
+# few-shot example in the exact target layout.
+# -----------------------------------------------------------------------
+
     topics = [
-    """
-    * **Density and Variability**:
-        - **Core question**: “How diverse are the elements present?”
-        - **Analyse**: Consider people/vehicles/structures, qualitative heterogeneity of types and styles.
-        - **Consider**: occlusion and perspective that may hide elements.
-        - **Avoid**: exact headcounts when the scene is too crowded; provide ranges instead.
+        # 1 ─ Density & Variability
+        """
+    * **Density & Variability**
+    - **Ask** : “How diverse or crowded are the visible elements?”
+    - **Look for** : variety of people/vehicles/buildings, differences in style or size,
+        foreground vs. background occlusion.
+    - **Mind** : don’t demand exact counts when objects overlap—use ranges or relative terms.
+
+    QUESTION: Which description best matches the variety of vehicle types visible on the street?
+    A) Only passenger cars can be seen
+    B) A mix of cars, bicycles, and a delivery van
+    C) Two buses dominate the scene
+    D) Exclusive presence of motorcycles
+    E) Freight trains pass behind the buildings
+    F) No vehicles are present
+    CORRECT_ANSWER: B
+    REASON: Cars, several cyclists, and a white delivery van are clearly visible; no buses, trains, or motor-only situation.
+    TOPIC: Density & Variability — element diversity assessment
     """,
-    """
-    * **Land Use and Built Environment**:
-        - **Core question**: “Which land-use types and infrastructural elements are visible?”
-        - **Analyse**: building footprints, setbacks, road hierarchy, signage indicating zoning.
-        - **Consider**: transition zones (commercial ground floor, residential upper floors).
-        - **Avoid**: guessing legal zoning designations unless signage explicitly shows them.
+        # 2 ─ Land-Use & Built Form
+        """
+    * **Land-Use & Built Form**
+    - **Ask** : “Which land-use types or structural features appear?”
+    - **Look for** : façades, signage, setbacks, driveway widths, mixed-use clues
+        (retail ground floor, residential above).
+    - **Mind** : never guess legal zoning; only reference what signage or form proves.
+
+    QUESTION: What land-use is most clearly indicated by the ground-floor units on the right?
+    A) Residential flats
+    B) Light industrial workshops
+    C) Retail shops with signage
+    D) Agricultural storage barns
+    E) Government offices
+    F) School classrooms
+    CORRECT_ANSWER: C
+    REASON: Glass storefronts with sale signs line the right façade; no flats, industry, barns, offices or school rooms evident.
+    TOPIC: Land-Use & Built Form — retail presence
     """,
-    """
-    * **Social Interaction and Public Space**:
-        - **Core question**: “How are people using shared outdoor areas?”
-        - **Analyse**: posture (walking, sitting, gathering), group sizes, body orientation.
-        - **Consider**: supportive infrastructure (benches, shade) that enables interaction.
-        - **Avoid**: assumptions about conversations or social ties not visually supported.
+        # 3 ─ Public-Space Use & Social Interaction
+        """
+    * **Public-Space Use & Social Interaction**
+    - **Ask** : “How are people engaging with shared outdoor space?”
+    - **Look for** : posture (walking, sitting, queuing), grouping, orientation,
+        supporting furniture (benches, shade).
+    - **Mind** : don’t infer conversations or relationships you can’t see/hear.
+
+    QUESTION: What primary social activity is occurring around the fountain?
+    A) People standing in a queue
+    B) Joggers passing without stopping
+    C) Children playing and splashing water
+    D) Street vendors setting up stalls
+    E) Cyclists repairing bikes
+    F) No one near the fountain
+    CORRECT_ANSWER: C
+    REASON: Four children are playing in water jets; no queue, joggers, vendors, cyclists, or emptiness observed.
+    TOPIC: Public-Space Use & Social Interaction — play behaviour
     """,
-    """
-    * **Types and Character of Spaces for Social Interaction**:
-        - **Core question**: “What typology best describes this gathering space?”
-        - **Analyse**: enclosure ratio, edges vs. center activation, surface treatments.
-        - **Consider**: temporary vs. permanent fixtures (pop-up seating, seasonal market stalls).
-        - **Avoid**: conflating circulation corridors with bona-fide gathering nodes.
+        # 4 ─ Gathering-Space Typology
+        """
+    * **Gathering-Space Typology**
+    - **Ask** : “Which space type best labels this gathering spot?”
+    - **Look for** : enclosure, edge vs. centre activity, surface treatment,
+        temporary vs. permanent fixtures.
+    - **Mind** : don’t call a circulation corridor a plaza unless people linger there.
+
+    QUESTION: Which typology best describes the paved area in front of the museum entrance?
+    A) Linear transit corridor
+    B) Pocket park
+    C) Pedestrian plaza
+    D) Highway interchange
+    E) Private courtyard
+    F) Rooftop terrace
+    CORRECT_ANSWER: C
+    REASON: Wide paved expanse with seating and standing pedestrians denotes plaza; not a corridor, interchange, park, etc.
+    TOPIC: Gathering-Space Typology — plaza identification
     """,
-    """
-    * **Safety and Perceived Safety**:
-        - **Core question**: “What visual cues indicate safety or its absence?”
-        - **Analyse**: lighting, sightlines, surveillance (eyes on the street), active frontage.
-        - **Consider**: user diversity (e.g., signage readability, curb ramps).
-        - **Avoid**: fear-mongering or stereotyping based on user appearance.
+        # 5 ─ Safety & Perceived Safety
+        """
+    * **Safety & Perceived Safety**
+    - **Ask** : “What cues suggest safety or risk?”
+    - **Look for** : lighting, clear sight-lines, active frontages, surveillance cameras,
+        accessible kerbs.
+    - **Mind** : avoid stereotyping users or fear-mongering language.
+
+    QUESTION: Which element most directly enhances nighttime safety on this street?
+    A) Overhead LED streetlights
+    B) High concrete barriers
+    C) Dense tree canopy blocking view
+    D) Broken windows on shops
+    E) Absence of pedestrians
+    F) Garbage piled against walls
+    CORRECT_ANSWER: A
+    REASON: Bright LED poles line both kerbs; barriers, canopy, broken windows, emptiness, garbage do not boost safety.
+    TOPIC: Safety & Perceived Safety — lighting cue
     """,
-    """
-    * **Culture and Identity**:
-        - **Core question**: “Which cultural markers convey local identity?”
-        - **Analyse**: murals, flags, language on signs, vernacular architecture.
-        - **Consider**: temporary cultural events (street fairs, decorations).
-        - **Avoid**: reducing culture to monolithic traits; acknowledge multiplicity if visible.
+        # 6 ─ Culture & Identity
+        """
+    * **Culture & Identity**
+    - **Ask** : “Which cultural markers express local identity?”
+    - **Look for** : murals, flags, language on signs, vernacular materials,
+        festival decor.
+    - **Mind** : acknowledge multiple cultures if visible; don’t over-generalise.
+
+    QUESTION: Which cultural marker stands out on the bakery façade?
+    A) A large national flag banner
+    B) Graffiti tags in multiple languages
+    C) Traditional mosaic of local fruit motif
+    D) Neon sign in generic English font
+    E) Corporate franchise logo
+    F) No cultural marker present
+    CORRECT_ANSWER: C
+    REASON: Coloured tile mosaic of regional fruit decorates façade; not flag, graffiti, neon, franchise logo or nothing.
+    TOPIC: Culture & Identity — vernacular decoration
     """,
-    """
-    * **Atmosphere and Urban Dynamics**:
-        - **Core question**: “What is the vibe or energy level?”
-        - **Analyse**: pedestrian flow, noise cues (open mouths, musicians), lighting warmth.
-        - **Consider**: weather and time affecting foot traffic.
-        - **Avoid**: prescriptive value judgments (“good” or “bad” vibe) without context.
+        # 7 ─ Atmosphere & Urban Dynamics
+        """
+    * **Atmosphere & Urban Dynamics**
+    - **Ask** : “What is the energy level or vibe?”
+    - **Look for** : pedestrian flow, musicians, open mouths (talking/singing),
+        warm/cool lighting.
+    - **Mind** : describe, don’t judge (“lively” vs. “good/bad”).
+
+    QUESTION: Which phrase best captures the overall vibe of the scene?
+    A) Quiet residential cul-de-sac
+    B) Bustling commercial high street
+    C) Deserted industrial park
+    D) Night-time festival crowd
+    E) Suburban strip mall at dawn
+    F) Rural farmland lane
+    CORRECT_ANSWER: B
+    REASON: Crowds, open shops, and heavy foot traffic create a bustling commercial feel; other descriptions mismatch.
+    TOPIC: Atmosphere & Urban Dynamics — energy level inference
     """,
-    """
-    * **Livability and Quality of Life**:
-        - **Core question**: “How comfortable and convenient does the environment appear?”
-        - **Analyse**: shade, seating, greenery, upkeep, mixed uses within walking distance.
-        - **Consider**: inclusivity of amenities (playgrounds, senior seating).
-        - **Avoid**: projecting personal lifestyle preferences onto evaluation.
+        # 8 ─ Livability & Comfort
+        """
+    * **Livability & Comfort**
+    - **Ask** : “How comfortable or convenient does it appear?”
+    - **Look for** : shade, seating, greenery, overall upkeep, mixed amenities.
+    - **Mind** : don’t project personal lifestyle preferences.
+
+    QUESTION: Which amenity most improves pedestrian comfort along this block?
+    A) Continuous shade from awnings
+    B) Loud construction noise
+    C) Lack of any seating
+    D) Closed shop shutters
+    E) Overflowing trash bins
+    F) Potholes in the sidewalk
+    CORRECT_ANSWER: A
+    REASON: Fabric awnings span storefronts providing shade; others describe negative or absent features.
+    TOPIC: Livability & Comfort — shading amenity
     """,
-    """
-    * **Transportation and Mobility**:
-        - **Core question**: “Which transport modes and infrastructure are present?”
-        - **Analyse**: sidewalks, bike lanes, transit stops, parking, traffic flow.
-        - **Consider**: accessibility features (curb cuts, tactile paving).
-        - **Avoid**: inferring service frequency or ridership stats beyond visible indicators.
+        # 9 ─ Transport & Mobility
+        """
+    * **Transport & Mobility**
+    - **Ask** : “Which travel modes and infrastructures are present?”
+    - **Look for** : sidewalks, bike lanes, bus stops, parking, curb cuts.
+    - **Mind** : don’t infer service frequency or usage stats.
+
+    QUESTION: What piece of transport infrastructure is clearly visible near the intersection?
+    A) Marked bicycle lane
+    B) Helipad
+    C) Subway station entrance
+    D) Shipping dock
+    E) Airport runway sign
+    F) Horse carriage stand
+    CORRECT_ANSWER: A
+    REASON: Painted bike symbols and green pavement appear curbside; no helipad, subway entrance, docks, runway, or carriages evident.
+    TOPIC: Transport & Mobility — cycle facility
     """,
-    """
-    * **Urban Design and Aesthetics**:
-        - **Core question**: “How do form, proportion, and detailing contribute to streetscape?”
-        - **Analyse**: façade rhythm, material palette, signage coherence, street furniture style.
-        - **Consider**: visual hierarchy, maintenance level.
-        - **Avoid**: equating novelty with quality; discuss aesthetics in descriptive, not prescriptive, terms.
+        #10 ─ Urban Design & Aesthetics
+        """
+    * **Urban Design & Aesthetics**
+    - **Ask** : “How do form, proportion and details shape the streetscape?”
+    - **Look for** : façade rhythm, material palette, signage coherence,
+        street furniture style.
+    - **Mind** : use neutral descriptive language, not value judgements.
+
+    QUESTION: How are the shopfront signs along the left façade arranged?
+    A) Irregular sizes and random heights
+    B) Uniform height and consistent serif font
+    C) Neon script stacked vertically
+    D) Digital billboards rotating adverts
+    E) Hand-painted signs on shutters
+    F) No signs present
+    CORRECT_ANSWER: B
+    REASON: All signs sit on the same lintel line and share matching serif font; others incorrect.
+    TOPIC: Urban Design & Aesthetics — façade rhythm
     """,
-    """
-    * **Economic Activity**:
-        - **Core question**: “What signs of commerce or economic vitality are visible?”
-        - **Analyse**: open storefronts, market stalls, advertising density, vacancy signs.
-        - **Consider**: time-of-day influence on business activity.
-        - **Avoid**: projecting long-term economic health from a single snapshot.
+        #11 ─ Economic Activity
+        """
+    * **Economic Activity**
+    - **Ask** : “What signs of commerce or economic vitality are visible?”
+    - **Look for** : open storefronts, street vendors, advertising density, vacancy signs.
+    - **Mind** : don’t forecast long-term economics from one snapshot.
+
+    QUESTION: Which indicator suggests strong street-level commerce in the image?
+    A) Multiple open shop doors with customers
+    B) Boarded-up windows
+    C) Empty display shelves
+    D) For-lease banners on every unit
+    E) Closed metal shutters
+    F) No built structures at all
+    CORRECT_ANSWER: A
+    REASON: Several shops have doors open, customers inside; other options conflict with visible activity.
+    TOPIC: Economic Activity — open retail units
     """,
-    """
-    * **Sustainability and Environmental Aspects**:
-        - **Core question**: “Which sustainable features or concerns are evident?”
-        - **Analyse**: green roofs, permeable pavements, bike infrastructure, tree canopy.
-        - **Consider**: visible pollution sources (smoke, litter) and mitigation measures.
-        - **Avoid**: claiming carbon metrics or policy compliance without data.
+        #12 ─ Sustainability & Environment
+        """
+    * **Sustainability & Environment**
+    - **Ask** : “Which sustainable features or concerns are evident?”
+    - **Look for** : tree canopy, bike infrastructure, permeable paving, solar panels,
+        litter or smoke.
+    - **Mind** : don’t quote carbon metrics or policies you can’t see.
+
+    QUESTION: Which sustainability feature is prominently visible on the building roofs?
+    A) Extensive green roofs with vegetation
+    B) Large diesel generators
+    C) Rooftop swimming pools
+    D) Piles of construction debris
+    E) Satellite dishes only
+    F) Nothing installed on roofs
+    CORRECT_ANSWER: A
+    REASON: Lush green roof gardens cover rooftops; no generators, pools, debris, dishes-only or blank roofs seen.
+    TOPIC: Sustainability & Environment — green roof presence
     """,
-    """
-    * **Cultural Significance**:
-        - **Core question**: “Does the image show culturally significant institutions or events?”
-        - **Analyse**: museums, theaters, heritage plaques, crowd behavior suggesting festivals.
-        - **Consider**: contextual signage that may point to historical importance.
-        - **Avoid**: overstating importance without corroborating visual evidence.
+        #13 ─ Accessibility & Inclusivity
+        """
+    * **Accessibility & Inclusivity**
+    - **Ask** : “Is the setting welcoming for diverse abilities?”
+    - **Look for** : ramps, tactile strips, inclusive signage, varied seating.
+    - **Mind** : focus on visible affordances, not legal compliance claims.
+
+    QUESTION: Which accessibility element can be observed at the mid-block crossing?
+    A) Curb ramps with tactile paving
+    B) Steep uncut kerbs
+    C) Staircase leading directly to road
+    D) Chain barrier blocking access
+    E) No crossing treatment
+    F) Construction trench
+    CORRECT_ANSWER: A
+    REASON: Sloped ramps with dotted tactile strips flank zebra lines; other listed impediments absent.
+    TOPIC: Accessibility & Inclusivity — curb-ramp feature
     """,
-    """
-    * **Accessibility and Inclusivity**:
-        - **Core question**: “Is the environment welcoming and usable for diverse abilities and groups?”
-        - **Analyse**: ramps, tactile strips, inclusive signage, shelter, seating diversity.
-        - **Consider**: sightlines, lighting uniformity, absence of barriers.
-        - **Avoid**: assuming legal compliance; focus on visible affordances.
+        #14 ─ Regulation & Planning Cues
+        """
+    * **Regulation & Planning Cues**
+    - **Ask** : “What hints of planning or regulation are observable?”
+    - **Look for** : permits, zoning notices, traffic-calming devices,
+        construction hoardings.
+    - **Mind** : don’t interpret legal text; just note its presence.
+
+    QUESTION: What planning notice is posted on the construction fence?
+    A) Permit board detailing approved redevelopment
+    B) Concert advertisement poster
+    C) Welcome mural by local school
+    D) Political campaign banner
+    E) Graffiti tag only
+    F) No signage at all
+    CORRECT_ANSWER: A
+    REASON: Official permit board lists project details; other items (concert, mural, banner, graffiti, none) not present.
+    TOPIC: Regulation & Planning Cues — permit signage
     """,
-    """
-    * **Regulatory and Planning Aspects**:
-        - **Core question**: “What hints of planning or regulation are observable?”
-        - **Analyse**: posted permits, zoning notices, traffic-calming devices, construction hoardings.
-        - **Consider**: temporary regulations (event closures, COVID signage).
-        - **Avoid**: legal interpretation; stick to visible compliance indicators.
-    """,
-    """
-    * **Materiality and Texture**:
-        - **Core question**: “What materials and surface qualities define the scene?”
-        - **Analyse**: masonry vs. glass vs. wood, pavement texture, patina, reflectivity.
-        - **Consider**: weathering patterns that hint at age or upkeep.
-        - **Avoid**: inferring structural integrity or cost from surface appearance alone.
+        #15 ─ Materiality & Texture
+        """
+    * **Materiality & Texture**
+    - **Ask** : “Which materials and surface qualities dominate?”
+    - **Look for** : masonry, glass, timber, pavement texture, patina.
+    - **Mind** : avoid inferring structural integrity or cost.
+
+    QUESTION: Which paving material covers the main pedestrian walkway?
+    A) Red clay bricks
+    B) Polished granite slabs
+    C) Weathered timber boards
+    D) Gravel surface
+    E) Asphalt only
+    F) Sand beach
+    CORRECT_ANSWER: B
+    REASON: Smooth reflective granite slabs are visible underfoot; no bricks, timber, gravel, asphalt-only or sand evident.
+    TOPIC: Materiality & Texture — pavement finish
     """
     ]
+
 
 
     sampled_topics = random.sample(topics, n)
@@ -152,7 +326,7 @@ def prompt_text(n=2):
 
     prompt = f"""ROLE
     You are a senior “visual-question author” for an urban-analytics dataset.
-    You will see **one** Street-View image and must write **one** challenging
+    You will see **one** Street-View image and must write **one** 
     multiple-choice question that can be answered *only* by inspecting that image.
 
     INPUTS
