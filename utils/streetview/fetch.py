@@ -194,7 +194,7 @@ def  search_and_download_random_mly(
                         "date": meta.get("captured_at"),
                     },
                     fp,
-                    ensure_ascii=False,
+                    #ensure_ascii=False,
                     indent=4,
                 )
 
