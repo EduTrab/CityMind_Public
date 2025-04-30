@@ -198,7 +198,7 @@ def  search_and_download_random_mly(
                     indent=4,
                 )
 
-            return json_path, image_path  # ← RETURN ONLY ONE IMAGE / META
+            return  image_path, json_path  # ← RETURN ONLY ONE IMAGE / META
 
     # loop exited → no image found
     raise RuntimeError("No Mapillary imagery found within the specified radius.")
