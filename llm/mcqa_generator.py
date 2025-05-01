@@ -30,43 +30,8 @@ def prompt_text(n=2):
 
     topics = [
     """
-    * **Scene Understanding**:
-        - **Core question**: “What is the overall theme or purpose of this place?”
-        - **Analyse**: global layout, dominant land-use, activity level, mood, time-of-day/season cues.
-        - **Consider**: lighting, color palette, density, presence of nature vs. built form.
-        - **Avoid**: zooming into single objects, conjecturing about non-visible interiors, or inferring residents’ demographics beyond what is visually evident.
-    """,
-    """
-    * **Instance Identity**:
-        - **Core question**: “What is this specific object, or does object X appear here?”
-        - **Analyse**: salient shape, size, iconography, material, immediately surrounding context.
-        - **Consider**: viewpoint distortions, occlusions, and class look-alikes.
-        - **Avoid**: extrapolating attributes (e.g., brand, model year) unless unmistakably visible.
-    """,
-    """
-    * **Instance Attribute**:
-        - **Core question**: “Which fine-grained attributes describe object X?”
-        - **Analyse**: color, texture, subtype, condition, ornamentation.
-        - **Consider**: lighting effects and reflections that may alter hue/texture.
-        - **Avoid**: inferring functional or hidden traits (e.g., taste, price, policy compliance).
-    """,
-    """
-    * **Instance Localization**:
-        - **Core question**: “Where is object X located in the frame?”
-        - **Analyse**: relation to frame center, depth cues.
-        - **Consider**: scale invariance, partial occlusion, and perspective distortion.
-        - **Avoid**: narrating exact pixel coordinates unless required; semantic judgments belong to other categories.
-    """,
-    """
-    * **Instance Interaction**:
-        - **Core question**: “What is object A doing to/with object B?”
-        - **Analyse**: posture, contact points, motion blur cues, tool use, shared affordances.
-        - **Consider**: sequential frames if available to confirm dynamic action.
-        - **Avoid**: attributing intent, emotion, or future actions not visually grounded.
-    """,
-    """
     * **Density and Variability**:
-        - **Core question**: “How many and how diverse are the elements present?”
+        - **Core question**: “How diverse are the elements present?”
         - **Analyse**: Consider people/vehicles/structures, qualitative heterogeneity of types and styles.
         - **Consider**: occlusion and perspective that may hide elements.
         - **Avoid**: exact headcounts when the scene is too crowded; provide ranges instead.
@@ -332,7 +297,7 @@ def download_new_batch_llm_mcqa(llm_server, paths=None, model=None, batch_size=N
 
                 model_response = llm_server.send_query(
                     image_path=img,
-                    prompt=prompt_text(n=10),
+                    prompt=prompt_text(n=2),
                     model=current_model
                 )
                 # model_response = llm_server.send_query(

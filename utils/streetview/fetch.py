@@ -95,12 +95,12 @@ def _get(url: str, max_retries: int, headers: dict | None = None, stream: bool =
 # -----------------------------------------------------------------------------
 # Public API
 # -----------------------------------------------------------------------------
-
+import random
 def  search_and_download_random_mly(
-    pano_id: int =None, # for compatibility
+    indx: int =None, # for compatibility
     coords: Tuple[float, float] | None = None,
     max_retries: int = 3,
-    radius_m: float=1000,
+    radius_m: float=10000,
     access_token: str="MLY|23937335652558993|eb49143137817a491c1f5257340cd217" ,
     out_dir: str = SAVE_DIR,
     zoom: int = 14,
@@ -138,6 +138,12 @@ def  search_and_download_random_mly(
     else:
         lat, lon = random_location()
 
+    lat_shift = random.uniform(-0.01, 0.01)  # Adjust the range as needed
+    lon_shift = random.uniform(-0.01, 0.01)  # Adjust the range as needed
+
+    lat += lat_shift
+    lon += lon_shift
+
     # ------------------------------------------------------------------
     # 1. Compute bounding‑box around the search circle (fast tile lookup)
     # ------------------------------------------------------------------
@@ -150,8 +156,8 @@ def  search_and_download_random_mly(
     west, south, east, north = lon - dlon, lat - dlat, lon + dlon, lat + dlat
     tiles = list(mercantile.tiles(west, south, east, north, zoom))
 
-    os.makedirs(out_dir, exist_ok=True)
-
+    #os.makedirs(out_dir, exist_ok=True)
+    indx=time.time()
     for tile in tiles:
         tile_url = (
             f"https://tiles.mapillary.com/maps/vtp/{tile_coverage}/2/"
@@ -178,7 +184,7 @@ def  search_and_download_random_mly(
             lng_meta, lat_meta = meta["computed_geometry"]["coordinates"]
 
             # download JPEG
-            image_path = os.path.join(out_dir, f"{pano_id}.jpg")
+            image_path = os.path.join(out_dir, f"{indx}.jpg")
             img_resp = _get(meta["thumb_2048_url"], max_retries, stream=True)
             with open(image_path, "wb") as fp:
                 for chunk in img_resp.iter_content(chunk_size=64 * 1024):
@@ -186,15 +192,15 @@ def  search_and_download_random_mly(
                         fp.write(chunk)
 
             # write JSON metadata
-            json_path = os.path.join(out_dir, f"{pano_id}.json")
+            json_path = os.path.join(out_dir, f"{indx}.json")
             with open(json_path, "w", encoding="utf-8") as fp:
                 json.dump(
-                    {   "pano_id": pano_id,
+                    {   "pano_id": indx,
                         "location": {"lat": lat_meta, "lng": lng_meta},
                         "date": meta.get("captured_at"),
                     },
                     fp,
-                    ensure_ascii=False,
+                    #ensure_ascii=False,
                     indent=4,
                 )
 

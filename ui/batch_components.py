@@ -9,11 +9,13 @@ def render_question_card(record, i):
     qmode = record["question_mode"]
 
     if os.path.exists(image_path):
+        img = Image.open(image_path)
         st.image(
-            Image.open(image_path),
+            img,
             caption=f"Image #{os.path.basename(image_path)}",
-            use_container_width=True
+            #use_container_width=True
         )
+
 
     if qmode == "llm_mcqa":
         question_text = record.get("mc_question", "No MC question found.")
