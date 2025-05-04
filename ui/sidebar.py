@@ -9,10 +9,10 @@ def render_sidebar_controls():
 
     # ─── Model selection ─────────────────────────────────────────────────
     model_options = [
-        "gemini-reasoning"
+        "gemini-2.5-flash-preview-04-17"
     ]
     if "selected_model" not in st.session_state:
-        st.session_state.selected_model = "gemini-reasoning"
+        st.session_state.selected_model = "gemini-2.5-flash-preview-04-17"
     st.session_state.selected_model = st.sidebar.selectbox(
         "LLM Model",
         options=model_options,

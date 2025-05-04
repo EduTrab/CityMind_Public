@@ -177,7 +177,7 @@ class MultiLLMService:
             # new_width = 512
             # new_height = int((new_width / width) * height)
             # image = image.resize((new_width, new_height))
-            model_instance = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
+            model_instance = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
             response = model_instance.generate_content([prompt, image])
             return response.text
         except Exception as e:
